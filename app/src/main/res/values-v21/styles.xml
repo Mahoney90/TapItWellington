@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
 
     <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
@@ -7,4 +8,8 @@
         <!-- Customize your theme here. -->
     </style>
 
+    <style name="RatingBar" parent="AppTheme">
+        <item name="colorControlNormal">#e1b122</item>
+        <item name="android:colorControlActivated">#FF9800</item>
+    </style>
 </resources>

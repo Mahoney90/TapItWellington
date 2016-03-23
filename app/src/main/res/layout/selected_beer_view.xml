@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight=".6"
+        android:orientation="vertical"
+        android:gravity="center">
+
+        <TextView
+            android:id="@+id/text_beer_selected"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            />
+
+        <RatingBar
+            android:id="@+id/rate_bar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:numStars="4"
+            android:rating="0.0"
+            android:isIndicator="false"
+            android:theme="@style/RatingBar"
+            android:gravity="center_horizontal"
+            android:stepSize="1.0"
+            />
+
+        <Button
+            android:id="@+id/save_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Save"
+            android:textAllCaps="true"
+            android:gravity="center_horizontal"
+            />
+        <Button
+            android:id="@+id/view_db"
+            android:text="View DB"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight=".4"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/show_rating_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="You have not had this beer yet!"
+            android:gravity="center_horizontal"
+            />
+
+        <TextView
+            android:id="@+id/show_number_of_times_had"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"/>
+
+
+    </LinearLayout>
+
+
+
+</LinearLayout>
