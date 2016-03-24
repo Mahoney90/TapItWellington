@@ -45,6 +45,8 @@ public class SelectedBeerView extends Fragment {
         mBeerName = getArguments().getString("beer");
         tv.setText(mBeerName);
 
+
+
         Button button = (Button) v.findViewById(R.id.save_button);
         Button button1 = (Button) v.findViewById(R.id.view_db);
 
@@ -72,7 +74,7 @@ public class SelectedBeerView extends Fragment {
             public void onClick(View v) {
 
                 BeerHandler handler = new BeerHandler(getActivity());
-                BeerCatalogue catalogue = new BeerCatalogue(1, mBeerName, mRating, "Bren");
+                BeerCatalogue catalogue = new BeerCatalogue(1, mBeerName, mRating, "Debbie");
                 handler.addRating(catalogue);
 
                 showRating(catalogue);
@@ -96,8 +98,11 @@ public class SelectedBeerView extends Fragment {
 
         BeerHandler handler = new BeerHandler(getActivity());
         int count = handler.getCount(mBeerName);
-        getNumOfTimesHad.setText("You have drank this beer " + count + " times \n" +
-                "Your average rating is " );
+        String totalAvgRating = handler.getTotalAvgRating(mBeerName);
+        String userAvgRating = handler.getUserAvgRating(mBeerName, "Debbie");
+        getNumOfTimesHad.setText("This beer has an average rating of " + totalAvgRating + "\n" +
+                "You have drank this beer " + count + " times \n" +
+                "Your average rating is " + userAvgRating);
 
 
     }

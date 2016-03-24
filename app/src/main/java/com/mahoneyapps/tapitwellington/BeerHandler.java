@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -101,6 +102,60 @@ public class BeerHandler {
                 null, null, null, null);
         int numOfTimes = cursor.getCount();
         return numOfTimes;
+    }
+
+    public String getTotalAvgRating(String beerName){
+        SQLiteDatabase ourDB = dbHelper.getReadableDatabase();
+//        Cursor cursor = ourDB.query(dbHelper.TABLE_BEERS, new String[]{dbHelper.KEY_ID, dbHelper.BEER_NAME,
+//                dbHelper.BEER_RATING, dbHelper.USER_NAME}, dbHelper.BEER_NAME + "=?", new String[]{beerName}, null, null, null, null);
+
+        Cursor cursor1 = ourDB.rawQuery("SELECT Sum(rating) FROM beers WHERE name = ?", new String[]{beerName});
+
+        int columnIndex = cursor1.getColumnIndex("Sum(rating)");
+        cursor1.moveToFirst();
+        int totalRatingPoints = cursor1.getInt(columnIndex);
+        Log.d("ratingpoints first", String.valueOf(totalRatingPoints));
+        double ratingPointsDouble = Double.parseDouble(String.valueOf(totalRatingPoints));
+        Log.d("ratingpoints", String.valueOf(ratingPointsDouble));
+
+        cursor1.close();
+
+        Cursor cursor2 = ourDB.rawQuery("SELECT name FROM beers WHERE name = ?", new String[]{beerName});
+        int totalTimesRated = cursor2.getCount();
+
+        double ratingTimesDouble = Double.parseDouble(String.valueOf(totalTimesRated));
+        Log.d("ratingtimes", String.valueOf(ratingTimesDouble));
+
+
+        double averageRating = ratingPointsDouble/ratingTimesDouble;
+        String averageRatingRounded = String.format("%.1f", averageRating);
+
+        return averageRatingRounded;
+
+    }
+
+    public String getUserAvgRating(String beerName, String userName){
+        SQLiteDatabase ourDB = dbHelper.getReadableDatabase();
+
+        Cursor cursor = ourDB.rawQuery("SELECT Sum(rating) FROM beers WHERE name = ? AND user_name = ?",
+                new String[]{beerName, userName});
+        cursor.moveToFirst();
+        int totalRatingPoints = cursor.getInt(0);
+        Log.d("user avg rating", String.valueOf(totalRatingPoints));
+        double ratingPointsDouble = Double.parseDouble(String.valueOf(totalRatingPoints));
+
+
+        Cursor cursor2 = ourDB.rawQuery("SELECT name FROM beers WHERE name = ? AND user_name = ?",
+                new String[]{beerName, userName});
+        int totalTimesRated = cursor2.getCount();
+        Log.d("user avg rating", String.valueOf(totalTimesRated));
+        double ratingTimesDouble = Double.parseDouble(String.valueOf(totalTimesRated));
+
+        double averageRating = ratingPointsDouble/ratingTimesDouble;
+        String averageRatingRounded = String.format("%.1f", averageRating);
+
+        return averageRatingRounded;
+
     }
 }
 
