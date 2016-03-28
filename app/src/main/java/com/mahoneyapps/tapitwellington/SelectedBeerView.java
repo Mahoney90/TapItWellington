@@ -22,6 +22,10 @@ public class SelectedBeerView extends Fragment {
     TextView getRatingText;
     TextView getNumOfTimesHad;
     static String mUserName;
+    TextView mTotalCheckIn;
+    TextView mTotalRating;
+    TextView mUserCheckIn;
+    TextView mUserRating;
 
     public static SelectedBeerView newInstance(Bundle b){
         SelectedBeerView sbv = new SelectedBeerView();
@@ -45,6 +49,12 @@ public class SelectedBeerView extends Fragment {
         mBeerName = getArguments().getString("beer");
         tv.setText(mBeerName);
 
+
+
+        mTotalCheckIn = (TextView) v.findViewById(R.id.number_total_check_in);
+        mTotalRating = (TextView) v.findViewById(R.id.number_total_rating);
+        mUserCheckIn = (TextView) v.findViewById(R.id.number_user_check_in);
+        mUserRating = (TextView) v.findViewById(R.id.number_user_check_in_rating);
 
 
         Button button = (Button) v.findViewById(R.id.save_button);
@@ -97,13 +107,18 @@ public class SelectedBeerView extends Fragment {
         getRatingText.setText("You have rated this beer " + rating + " stars! Thanks " + mUserName);
 
         BeerHandler handler = new BeerHandler(getActivity());
-        int count = handler.getCount(mBeerName);
+        int count = handler.getUserCount(mBeerName, "Debbie");
+        int totalCount = handler.getTotalCount(mBeerName);
         String totalAvgRating = handler.getTotalAvgRating(mBeerName);
         String userAvgRating = handler.getUserAvgRating(mBeerName, "Debbie");
         getNumOfTimesHad.setText("This beer has an average rating of " + totalAvgRating + "\n" +
                 "You have drank this beer " + count + " times \n" +
                 "Your average rating is " + userAvgRating);
 
+        mTotalCheckIn.setText(" " + totalCount);
+        mTotalRating.setText(" " + totalAvgRating);
+        mUserCheckIn.setText(" " + count);
+        mUserRating.setText(" " + userAvgRating);
 
     }
 }

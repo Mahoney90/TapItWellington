@@ -2,6 +2,8 @@ package com.mahoneyapps.tapitwellington;
 
 import android.app.FragmentTransaction;
 import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -19,12 +21,16 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     public static Context mContext;
     Menu mMenu;
     GoogleApiClient mGoogleApiClient;
+    SessionManager mSessionManager;
+    SharedPreferences mSharedPreferences;
+    private static final String LOGIN_STATE = "Login State";
 
     String name = "Brendan";
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -43,6 +49,15 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 //        Bundle bundle = new Bundle();
 //        bundle.putString("text", name);
 //        frag2.setArguments(bundle);
+
+//
+//        mSessionManager = new SessionManager(this);
+//        if (!mSessionManager.isLoggedIn()){
+//            Log.d("Opening session manager", "okay");
+//            Intent openLogin = new Intent(this, SignInActivity.class);
+//            startActivity(openLogin);
+//        }
+
 
         // if there is no saved bundle, add FragmentOne XML to the activity launch frame
         if (savedInstanceState == null){
@@ -113,6 +128,15 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             return true;
+        }
+        if (id == R.id.sign_out){
+            mSharedPreferences = getSharedPreferences(LOGIN_STATE, Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = mSharedPreferences.edit();
+            editor.clear();
+            editor.commit();
+            Intent intent = new Intent(this, SignInActivity.class);
+            startActivity(intent);
+            finish();
         }
 
         return super.onOptionsItemSelected(item);

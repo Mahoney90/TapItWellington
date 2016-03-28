@@ -95,11 +95,19 @@ public class BeerHandler {
                 new String[] {String.valueOf(catalogue.getID())});
     }
 
-    public int getCount(String beerName){
+    public int getTotalCount(String beerName){
         SQLiteDatabase ourDB = dbHelper.getReadableDatabase();
         Cursor cursor = ourDB.query(dbHelper.TABLE_BEERS, new String[] {dbHelper.KEY_ID, dbHelper.BEER_NAME,
                         dbHelper.BEER_RATING, dbHelper.USER_NAME}, dbHelper.BEER_NAME + "=?", new String[]{beerName},
                 null, null, null, null);
+        int numOfTimes = cursor.getCount();
+        return numOfTimes;
+    }
+
+    public int getUserCount(String beerName, String userName){
+        SQLiteDatabase ourDB = dbHelper.getReadableDatabase();
+        Cursor cursor = ourDB.rawQuery("SELECT name FROM beers WHERE name = ? AND user_name = ?",
+                                        new String[]{beerName, userName});
         int numOfTimes = cursor.getCount();
         return numOfTimes;
     }
