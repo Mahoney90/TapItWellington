@@ -12,6 +12,8 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.facebook.FacebookSdk;
+import com.facebook.login.LoginManager;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 
@@ -21,9 +23,10 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     public static Context mContext;
     Menu mMenu;
     GoogleApiClient mGoogleApiClient;
-    SessionManager mSessionManager;
     SharedPreferences mSharedPreferences;
     private static final String LOGIN_STATE = "Login State";
+    private int TAB_POSITION;
+    private String mUserName;
 
     String name = "Brendan";
 
@@ -41,9 +44,20 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
         // add TabLayout and two tabs with titles
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tab_layout);
-        tabLayout.addTab(tabLayout.newTab().setText("List"));
-        tabLayout.addTab(tabLayout.newTab().setText("Map"));
+        tabLayout.addTab(tabLayout.newTab().setIcon(R.drawable.ic_home));
+        tabLayout.addTab(tabLayout.newTab().setIcon(R.drawable.ic_list));
+        tabLayout.addTab(tabLayout.newTab().setIcon(R.drawable.ic_map));
+        tabLayout.addTab(tabLayout.newTab().setIcon(R.drawable.ic_leaderboard));
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
+
+//        mUserName = getIntent().getExtras().getString("user name");
+//        Log.d("the user name MA", mUserName);
+
+//        mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+//        SharedPreferences.Editor editor = mSharedPreferences.edit();
+//        editor.putString("the user name", mUserName);
+//        Log.d("put string user name", mUserName);
+//        editor.apply();
 
 //        final FragmentTwo frag2 = new FragmentTwo();
 //        Bundle bundle = new Bundle();
@@ -61,7 +75,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
         // if there is no saved bundle, add FragmentOne XML to the activity launch frame
         if (savedInstanceState == null){
-            getFragmentManager().beginTransaction().add(R.id.frame, new PubListFragment()).commit();
+            getFragmentManager().beginTransaction().add(R.id.frame, new MyBeerHistory()).commit();
         }
 
 
@@ -69,18 +83,26 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
 
+                TAB_POSITION = tab.getPosition();
                 switch (tab.getPosition()) {
                     case 0:
                         FragmentTransaction ft = getFragmentManager().beginTransaction();
-                        ft.add(R.id.frame, new PubListFragment()).commit();
+                        ft.replace(R.id.frame, new MyBeerHistory()).commit();
+                        break;
+                    case 1:
+                        FragmentTransaction ft1 = getFragmentManager().beginTransaction();
+                        ft1.replace(R.id.frame, new PubListFragment()).commit();
                         break;
                     // if the 2nd tab is selected, open the Map
 
-                    // don't need to handle 'case 0' because the Pub List fragment is
-                    // instantiated already when savedInstanceState is null
-                    case 1:
-                        FragmentTransaction ft1 = getFragmentManager().beginTransaction();
-                        ft1.add(R.id.frame, new BeerMap()).commit();
+                    case 2:
+                        FragmentTransaction ft2 = getFragmentManager().beginTransaction();
+                        ft2.replace(R.id.frame, new BeerMap()).commit();
+                        break;
+
+                    case 3:
+                        FragmentTransaction ft3 = getFragmentManager().beginTransaction();
+                        ft3.replace(R.id.frame, new Leaderboard()).commit();
                         break;
                 }
 
@@ -125,18 +147,29 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
+        if (id == R.id.home){
+            getFragmentManager().popBackStack();
+
+            return true;
+        }
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             return true;
         }
         if (id == R.id.sign_out){
+            FacebookSdk.sdkInitialize(getApplicationContext());
+            LoginManager.getInstance().logOut();
             mSharedPreferences = getSharedPreferences(LOGIN_STATE, Context.MODE_PRIVATE);
             SharedPreferences.Editor editor = mSharedPreferences.edit();
             editor.clear();
-            editor.commit();
-            Intent intent = new Intent(this, SignInActivity.class);
+            editor.apply();
+            Intent intent = new Intent(this, SignInChooser.class);
             startActivity(intent);
             finish();
+        }
+        if (id == R.id.sign_out_google){
+            GoogleSignIn google = new GoogleSignIn();
+            google.signOut();
         }
 
         return super.onOptionsItemSelected(item);

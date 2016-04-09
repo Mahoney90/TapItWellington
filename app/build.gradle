@@ -1,8 +1,13 @@
 apply plugin: 'com.android.application'
+apply plugin: 'com.google.gms.google-services'
 
 android {
     compileSdkVersion 23
     buildToolsVersion "23.0.2"
+
+    lintOptions {
+        disable 'PrivateResource'
+    }
 
     defaultConfig {
         applicationId "com.mahoneyapps.tapitwellington"
@@ -12,6 +17,11 @@ android {
         versionName "1.0"
         multiDexEnabled true
     }
+
+    dexOptions {
+        javaMaxHeapSize "4g"
+    }
+
     buildTypes {
         release {
             minifyEnabled false
@@ -22,6 +32,7 @@ android {
 
     repositories {
         mavenCentral()
+        jcenter()
     }
 }
 
@@ -41,4 +52,6 @@ dependencies {
     compile 'com.google.android.gms:play-services:8.4.0'
     compile 'com.google.android.gms:play-services-auth:8.4.0'
     compile 'com.google.android.gms:play-services-plus:8.4.0'
+    compile group: 'com.google.guava', name: 'guava', version: '18.0'
+    compile 'com.yqritc:recyclerview-flexibledivider:1.2.9'
 }

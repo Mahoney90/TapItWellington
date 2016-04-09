@@ -6,8 +6,12 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Multimap;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by Brendan on 3/23/2016.
@@ -27,6 +31,7 @@ public class BeerHandler {
         valuesToStore.put(dbHelper.BEER_NAME, beerCatalogue.getName());
         valuesToStore.put(dbHelper.BEER_RATING, beerCatalogue.getRating());
         valuesToStore.put(dbHelper.USER_NAME, beerCatalogue.getUserName());
+        valuesToStore.put(dbHelper.BREWERY, beerCatalogue.getBrewery());
 
         int insertId = (int) ourDB.insert(dbHelper.TABLE_BEERS, null, valuesToStore);
         ourDB.close();
@@ -44,13 +49,75 @@ public class BeerHandler {
         if (cursor != null){
             cursor.moveToFirst();
             BeerCatalogue catalogue = new BeerCatalogue(Integer.parseInt(cursor.getString(0)), cursor.getString(1),
-                    Integer.parseInt(cursor.getString(2)), cursor.getString(3));
+                    Integer.parseInt(cursor.getString(2)), cursor.getString(3), cursor.getString(4));
 
             return catalogue;
         }
         else {
             return null;
         }
+    }
+
+    public List<String> getUserBeerHistory(String userName){
+        List<String> userHistory = new ArrayList<>();
+
+        SQLiteDatabase ourDB = dbHelper.getReadableDatabase();
+        Cursor cursor = ourDB.rawQuery("SELECT name FROM beers WHERE user_name = ?", new String[]{userName});
+        int columnIndex = cursor.getColumnIndex("name");
+        Log.d("column index 1", "name");
+        cursor.moveToFirst();
+
+        if (cursor.getCount() < 1){
+            Log.d("cursor less than 1", String.valueOf(cursor.getCount()));
+            return null;
+
+        }
+        String beerName = cursor.getString(columnIndex);
+        Log.d("column index 1", beerName);
+
+        userHistory.add(beerName);
+
+        while (cursor.moveToNext()){
+            beerName = cursor.getString(columnIndex);
+            Log.d("beer name while loop", beerName);
+            userHistory.add(beerName);
+        }
+        return userHistory;
+
+    }
+
+    public Multimap<String, Integer> getUserHistory(String userName){
+        Multimap<String, Integer> userHistory = ArrayListMultimap.create();
+//        String beerName;
+//        int beerRating;
+
+        SQLiteDatabase ourDB = dbHelper.getReadableDatabase();
+        Cursor cursor = ourDB.rawQuery("SELECT name FROM beers WHERE user_name = ?", new String[]{userName});
+        int columnIndex = cursor.getColumnIndex("name");
+        Log.d("column index 1", "name");
+        cursor.moveToFirst();
+
+        String beerName = cursor.getString(columnIndex);
+        Log.d("column index 1", beerName);
+
+        Cursor cursor2 = ourDB.rawQuery("SELECT rating FROM beers WHERE user_name = ?", new String[]{userName});
+        int otherColumnIndex = cursor2.getColumnIndex("rating");
+        Log.d("column index 2", "rating");
+        cursor2.moveToFirst();
+
+        int rating = cursor2.getInt(otherColumnIndex);
+        Log.d("column index 2", String.valueOf(rating));
+
+        userHistory.put(beerName, rating);
+        Set set = userHistory.asMap().entrySet();
+        while (cursor.moveToNext() && cursor2.moveToNext()){
+            beerName = cursor.getString(columnIndex);
+            Log.d("beer name while loop", beerName);
+            rating = cursor2.getInt(otherColumnIndex);
+            Log.d("beer rating while loop", String.valueOf(rating));
+            userHistory.put(beerName, rating);
+        }
+        return userHistory;
     }
 
     public List<BeerCatalogue> getAllRatings(){
@@ -66,8 +133,9 @@ public class BeerHandler {
                 String name = cursor.getString(1);
                 int rating = Integer.parseInt(cursor.getString(2));
                 String userName = cursor.getString(3);
+                String brewery = cursor.getString(4);
 
-                BeerCatalogue catalogue = new BeerCatalogue(id, name, rating, userName);
+                BeerCatalogue catalogue = new BeerCatalogue(id, name, rating, userName, brewery);
 
                 beerCatalogueList.add(catalogue);
             } while (cursor.moveToNext());
@@ -107,7 +175,7 @@ public class BeerHandler {
     public int getUserCount(String beerName, String userName){
         SQLiteDatabase ourDB = dbHelper.getReadableDatabase();
         Cursor cursor = ourDB.rawQuery("SELECT name FROM beers WHERE name = ? AND user_name = ?",
-                                        new String[]{beerName, userName});
+                new String[]{beerName, userName});
         int numOfTimes = cursor.getCount();
         return numOfTimes;
     }
@@ -164,6 +232,129 @@ public class BeerHandler {
 
         return averageRatingRounded;
 
+    }
+
+    public List<String> getBeerLeaders(){
+        SQLiteDatabase ourDB = dbHelper.getReadableDatabase();
+        Cursor cursor = ourDB.rawQuery("SELECT DISTINCT name FROM beers", null);
+        cursor.moveToFirst();
+        int columnIndex = cursor.getColumnIndex("name");
+        String beerName = cursor.getString(columnIndex);
+
+        List<String> beerList = new ArrayList<>();
+        beerList.add(beerName);
+        while (cursor.moveToNext()){
+            Log.d("beer name", beerName);
+            beerName = cursor.getString(columnIndex);
+            beerList.add(beerName);
+        }
+        Log.d("cursor", String.valueOf(cursor));
+
+        return beerList;
+
+    }
+
+
+    public List<String> getBeerLeadersInOrder(){
+        SQLiteDatabase ourDB = dbHelper.getReadableDatabase();
+        Cursor cursor = ourDB.rawQuery("SELECT DISTINCT name, COUNT(id) FROM beers GROUP BY name " +
+                                        "ORDER BY COUNT(id) DESC", null);
+        cursor.moveToFirst();
+        int columnIndex = cursor.getColumnIndex("name");
+        String beerName = cursor.getString(columnIndex);
+
+        List<String> beerList = new ArrayList<>();
+        beerList.add(beerName);
+        while (cursor.moveToNext()){
+            Log.d("beer order name order", beerName);
+            beerName = cursor.getString(columnIndex);
+            beerList.add(beerName);
+        }
+        Log.d("cursor order", String.valueOf(cursor));
+
+        return beerList;
+
+    }
+
+
+    public List<String> getBeerLeadersByUser(String userName){
+        SQLiteDatabase ourDB = dbHelper.getReadableDatabase();
+        Cursor cursor = ourDB.rawQuery("SELECT DISTINCT name, COUNT(id) FROM beers WHERE user_name = ? " +
+                                        "GROUP BY name ORDER BY COUNT(id) DESC", new String[]{userName});
+        cursor.moveToFirst();
+        int columnIndex = cursor.getColumnIndex("name");
+        String beerName = cursor.getString(columnIndex);
+
+        List<String> beerList = new ArrayList<>();
+        beerList.add(beerName);
+        while (cursor.moveToNext()){
+            Log.d("beer order name order", beerName);
+            beerName = cursor.getString(columnIndex);
+            beerList.add(beerName);
+        }
+        Log.d("cursor order", String.valueOf(cursor));
+
+        return beerList;
+
+    }
+
+
+    public List<String> getBeerLeadersByRating(){
+        SQLiteDatabase ourDB = dbHelper.getReadableDatabase();
+        Cursor cursor = ourDB.rawQuery("SELECT DISTINCT name, AVG(rating) FROM beers GROUP BY name ORDER BY AVG(rating) DESC", null);
+
+        cursor.moveToFirst();
+        int columnIndex = cursor.getColumnIndex("name");
+        String beerName = cursor.getString(columnIndex);
+
+        List<String> beerList = new ArrayList<>();
+        beerList.add(beerName);
+        while (cursor.moveToNext()){
+            Log.d("beer order name rating", beerName);
+            beerName = cursor.getString(columnIndex);
+            beerList.add(beerName);
+        }
+        Log.d("cursor order rating", String.valueOf(cursor));
+
+        return beerList;
+
+    }
+
+
+
+    public List<String> getBeerRatingsByUser(String userName){
+        SQLiteDatabase ourDB = dbHelper.getReadableDatabase();
+        Cursor cursor = ourDB.rawQuery("SELECT DISTINCT name, AVG(rating) FROM beers WHERE user_name = ? " +
+                                        "GROUP BY name ORDER BY AVG(rating) DESC", new String[]{userName});
+
+        cursor.moveToFirst();
+        int columnIndex = cursor.getColumnIndex("name");
+        String beerName = cursor.getString(columnIndex);
+
+        List<String> beerList = new ArrayList<>();
+        beerList.add(beerName);
+        while (cursor.moveToNext()){
+            Log.d("beer order name rating", beerName);
+            beerName = cursor.getString(columnIndex);
+            beerList.add(beerName);
+        }
+        Log.d("cursor order rating", String.valueOf(cursor));
+
+        return beerList;
+
+    }
+
+    public String getBrewery(String beerName){
+        SQLiteDatabase ourDB = dbHelper.getReadableDatabase();
+        Cursor cursor = ourDB.rawQuery("SELECT brewery FROM beers WHERE name = ?",
+                new String[]{beerName});
+        cursor.moveToFirst();
+        int breweryColumn = cursor.getColumnIndex("brewery");
+        Log.d("brewery column", String.valueOf(breweryColumn));
+        String brewery = cursor.getString(breweryColumn);
+        Log.d("brewery", brewery);
+
+        return brewery;
     }
 }
 

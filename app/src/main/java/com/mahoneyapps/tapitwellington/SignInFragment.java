@@ -34,7 +34,6 @@ public class SignInFragment extends Fragment {
     private CallbackManager mCallbackManager;
     private AccessTokenTracker mAccessTokenTracker;
     private ProfileTracker mProfileTracker;
-    private SessionManager mSessionManager;
     SharedPreferences mSharedPreferences;
     public static final String LOGIN_STATE = "Login State";
 
@@ -48,13 +47,13 @@ public class SignInFragment extends Fragment {
         mAccessTokenTracker = new AccessTokenTracker() {
             @Override
             protected void onCurrentAccessTokenChanged(AccessToken oldAccessToken, AccessToken newAccessToken) {
-
+                updateWithToken(newAccessToken);
             }
         };
         mProfileTracker = new ProfileTracker() {
             @Override
             protected void onCurrentProfileChanged(Profile oldProfile, Profile newProfile) {
-
+                updateUI();
             }
         };
 
@@ -64,10 +63,27 @@ public class SignInFragment extends Fragment {
 
     }
 
+    private void updateWithToken(AccessToken newAccessToken) {
+    }
+
+    private void updateUI() {
+        boolean enableButtons = AccessToken.getCurrentAccessToken() != null;
+        Log.d("update UI", "yup");
+
+        Profile profile = Profile.getCurrentProfile();
+        if (profile == null){
+            Log.d("Profile", "null");
+        }
+        if (enableButtons && profile != null){
+            Log.d("Access Token", AccessToken.getCurrentAccessToken().toString());
+            Log.d("update UI name", profile.getName());
+        }
+    }
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.sign_in_activity, container, false);
+        View view = inflater.inflate(R.layout.facebook_sign_in_activity, container, false);
 
         return view;
     }
@@ -88,15 +104,15 @@ public class SignInFragment extends Fragment {
         public void onSuccess(LoginResult loginResult) {
             Log.d("success", "should work");
             AccessToken accessToken = loginResult.getAccessToken();
+            Log.e("access token", accessToken.toString());
             Profile profile = Profile.getCurrentProfile();
 
             mSharedPreferences = getActivity().getSharedPreferences(LOGIN_STATE, Context.MODE_PRIVATE);
             SharedPreferences.Editor editor = mSharedPreferences.edit();
             editor.putString("name", profile.getName());
-            editor.putBoolean("loggedin", true);
+            editor.putBoolean("loggedin", false);
             editor.apply();
-//            mSessionManager = new SessionManager(getActivity());
-//            mSessionManager.createLoginSession(profile.getName());
+
             displayWelcomeMessage(profile);
 
         }
@@ -117,6 +133,18 @@ public class SignInFragment extends Fragment {
         super.onResume();
         Log.d("on resume", "resuming");
         Profile profile = Profile.getCurrentProfile();
+        if (profile == null) {
+            Log.d("profile is null", "null");
+            updateUI();
+        }
+        mSharedPreferences = getActivity().getSharedPreferences(LOGIN_STATE, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = mSharedPreferences.edit();
+        if (profile != null) {
+            Log.d("profile not null", "not null");
+            editor.putString("name", profile.getName());
+        }
+        editor.putBoolean("loggedin", true);
+        editor.apply();
 
         displayWelcomeMessage(profile);
 

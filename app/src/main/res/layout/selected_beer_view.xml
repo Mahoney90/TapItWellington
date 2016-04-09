@@ -2,20 +2,87 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:orientation="vertical"
               android:layout_width="match_parent"
-              android:layout_height="match_parent">
+              android:layout_height="match_parent"
+    >
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight=".6"
         android:orientation="vertical"
-        android:gravity="center">
+        android:gravity="center"
+        android:src="@mipmap/ic_beer">
 
         <TextView
             android:id="@+id/text_beer_selected"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center_horizontal"
+            android:textSize="26sp"
+            android:layout_marginBottom="15dp"
+            android:layout_marginTop="15dp"
             />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="25dp"
+            android:layout_marginBottom="15dp"
+            android:background="@drawable/shape_dark"
+            >
+
+
+            <TextView
+                android:id="@+id/total_check_in"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="22sp"
+                android:text="Total Check-Ins:"
+                android:textStyle="bold"
+                android:layout_alignParentTop="true"
+                android:layout_centerHorizontal="true"
+                android:paddingRight="12dp"/>
+
+            <TextView
+                android:id="@+id/number_total_check_in"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="22sp"
+                android:text="5"
+                android:textStyle="bold"
+                android:background="@drawable/shape"
+                android:paddingRight="8dp"
+                android:paddingLeft="6dp"
+                android:layout_alignParentTop="true"
+                android:layout_toRightOf="@+id/number_total_rating"
+                android:layout_toEndOf="@+id/number_total_rating"/>
+
+            <TextView
+                android:id="@+id/total_rating"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="22sp"
+                android:text="Total Rating:"
+                android:paddingLeft="13dp"
+                android:textStyle="bold"
+                android:layout_below="@+id/total_check_in"
+                android:layout_alignLeft="@+id/total_check_in"
+                android:layout_alignStart="@+id/total_check_in"/>
+
+            <TextView
+                android:id="@+id/number_total_rating"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="22sp"
+                android:text="5"
+                android:textStyle="bold"
+                android:background="@drawable/shape"
+                android:paddingRight="8dp"
+                android:paddingLeft="6dp"
+                android:layout_below="@+id/total_check_in"
+                android:layout_toRightOf="@+id/total_rating"
+                android:layout_toEndOf="@+id/total_rating"/>
+
+        </RelativeLayout>
 
         <RatingBar
             android:id="@+id/rate_bar"
@@ -27,7 +94,19 @@
             android:theme="@style/RatingBar"
             android:gravity="center_horizontal"
             android:stepSize="1.0"
+
             />
+
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight=".3"
+        android:orientation="vertical"
+        android:weightSum="1">
+
 
         <Button
             android:id="@+id/save_button"
@@ -36,112 +115,88 @@
             android:text="Save"
             android:textAllCaps="true"
             android:gravity="center_horizontal"
-            />
-        <Button
-            android:id="@+id/view_db"
-            android:text="View DB"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="center_horizontal"/>
+            android:layout_gravity="center_horizontal"
+            android:paddingLeft="50dp"
+            android:paddingRight="50dp"
+            android:paddingTop="20dp"
+            android:paddingBottom="20dp"/>
 
-    </LinearLayout>
+        <!--<ImageView-->
+            <!--android:layout_width="116dp"-->
+            <!--android:layout_height="match_parent"-->
+            <!--android:src="@mipmap/ic_beer"-->
+            <!--android:layout_gravity="center_horizontal"-->
+            <!--/>-->
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight=".4"
-        android:orientation="vertical">
-
-        <TextView
-            android:id="@+id/show_rating_text"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="You have not had this beer yet!"
-            android:gravity="center_horizontal"
-            />
-
-        <TextView
-            android:id="@+id/show_number_of_times_had"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center_horizontal"/>
 
 
     </LinearLayout>
 
-    <LinearLayout
-        android:id="@+id/show_user_and_total_ratings"
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:padding="25dp"
+        android:background="@drawable/shape"
+        android:layout_gravity="center_horizontal">
 
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_weight="1"
+
+        <TextView
+            android:id="@+id/user_check_in"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:textSize="22sp"
+            android:text="User Check-Ins:"
+            android:textStyle="bold"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:paddingRight="5dp"
+            android:paddingEnd="5dp"/>
 
-            <TextView
-                android:id="@+id/total_check_in"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Total Check-Ins:"/>
-
-            <TextView
-                android:id="@+id/number_total_check_in"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="__?"/>
-
-            <TextView
-                android:id="@+id/total_rating"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Total Rating:"/>
-
-            <TextView
-                android:id="@+id/number_total_rating"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="__?"/>
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_weight="1"
+        <TextView
+            android:id="@+id/number_user_check_in"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:textSize="22sp"
+            android:text="5"
+            android:textStyle="bold"
+            android:background="@drawable/shape"
+            android:paddingRight="8dp"
+            android:paddingLeft="6dp"
+            android:layout_alignParentTop="true"
+            android:layout_toRightOf="@+id/user_check_in"
+            android:layout_toEndOf="@+id/user_check_in"/>
 
-            <TextView
-                android:id="@+id/user_check_in"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="User Check-Ins:"/>
+        <TextView
+            android:id="@+id/user_check_in_rating"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="22sp"
+            android:text="Rating:"
+            android:textStyle="bold"
+            android:layout_below="@+id/user_check_in"
+            android:layout_alignLeft="@+id/user_check_in"
+            android:layout_alignStart="@+id/user_check_in"
+            android:layout_centerHorizontal="true"
+            android:paddingEnd="12dp"
+            android:paddingRight="12dp"
+            />
 
-            <TextView
-                android:id="@+id/number_user_check_in"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="__?"/>
-
-            <TextView
-                android:id="@+id/user_check_in_rating"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Rating:"/>
-
-            <TextView
-                android:id="@+id/number_user_check_in_rating"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="__?"/>
+        <TextView
+            android:id="@+id/number_user_check_in_rating"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="22sp"
+            android:paddingRight="8dp"
+            android:paddingLeft="6dp"
+            android:text="5"
+            android:textStyle="bold"
+            android:background="@drawable/shape"
+            android:layout_below="@+id/user_check_in"
+            android:layout_toRightOf="@+id/user_check_in_rating"
+            android:layout_toEndOf="@+id/user_check_in_rating"/>
 
 
-        </LinearLayout>
-
-
-    </LinearLayout>
+    </RelativeLayout>
 
 
 

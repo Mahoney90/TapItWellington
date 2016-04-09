@@ -1,0 +1,56 @@
+{
+  "project_info": {
+    "project_id": "tap-it-wellington",
+    "project_number": "199497613324",
+    "name": "Tap It Wellington"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:199497613324:android:40d0afab3be04a94",
+        "client_id": "android:com.mahoneyapps.tapitwellington",
+        "client_type": 1,
+        "android_client_info": {
+          "package_name": "com.mahoneyapps.tapitwellington",
+          "certificate_hash": []
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "199497613324-3p1sebqqo7fttmop204du767gte0618b.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.mahoneyapps.tapitwellington",
+            "certificate_hash": "EA18C84F35754DDA2B8727B9B6FEB14FDB4E0F06"
+          }
+        },
+        {
+          "client_id": "199497613324-jmki99d6hvcrn8p7982ih9vtepisrkj0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "cloud_messaging_service": {
+          "status": 1,
+          "apns_config": []
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "google_signin_service": {
+          "status": 2
+        },
+        "ads_service": {
+          "status": 1
+        }
+      }
+    }
+  ],
+  "client_info": [],
+  "ARTIFACT_VERSION": "1"
+}

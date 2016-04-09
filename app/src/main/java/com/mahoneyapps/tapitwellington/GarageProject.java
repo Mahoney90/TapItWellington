@@ -1,12 +1,14 @@
 package com.mahoneyapps.tapitwellington;
 
 import android.app.Fragment;
+import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,6 +16,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.nhaarman.listviewanimations.appearance.simple.SwingLeftInAnimationAdapter;
 
@@ -32,11 +35,16 @@ import java.util.ArrayList;
 public class GarageProject extends Fragment {
 
     ListView mListView;
+    String mBrewery = "Garage Project";
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.beer_list_view, container, false);
+
+        AppCompatActivity activity = ((AppCompatActivity) getActivity());
+        TextView toolbar = (TextView)activity.findViewById(R.id.toolbar_title);
+        toolbar.setText("Garage Project Tap List");
 
         mListView = (ListView) view.findViewById(R.id.list_view);
 
@@ -116,9 +124,14 @@ public class GarageProject extends Fragment {
                     String spotInList = mListView.getItemAtPosition(position).toString();
                     Log.d("listview click test", spotInList);
 
+                    FragmentManager fm = getFragmentManager();
+                    for (int entry = 0; entry < fm.getBackStackEntryCount(); entry++){
+                        Log.i("Fragment found", fm.getBackStackEntryAt(entry).toString());
+                    }
                     FragmentTransaction ft = ((FragmentActivity)mContext).getFragmentManager().beginTransaction();
                     Bundle args = new Bundle();
                     args.putString("beer", spotInList);
+                    args.putString("brewery", mBrewery);
                     SelectedBeerView sbv = new SelectedBeerView();
                     sbv.setArguments(args);
 

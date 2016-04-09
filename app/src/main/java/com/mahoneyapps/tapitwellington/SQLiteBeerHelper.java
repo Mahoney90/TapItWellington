@@ -17,12 +17,13 @@ import java.util.ArrayList;
 public class SQLiteBeerHelper extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "Tap It DB";
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 2;
     protected static final String TABLE_BEERS = "beers";
     public static final String KEY_ID = "id";
     public static final String BEER_NAME = "name";
     public static final String BEER_RATING = "rating";
     public static final String USER_NAME = "user_name";
+    public static final String BREWERY = "brewery";
 
 
     public SQLiteBeerHelper(Context context) {
@@ -32,7 +33,7 @@ public class SQLiteBeerHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         String CREATE_BEER_TABLE = "CREATE TABLE " + TABLE_BEERS + "(" + KEY_ID + " INTEGER PRIMARY KEY," +
-                BEER_NAME + " TEXT," + BEER_RATING + " INTEGER," + USER_NAME + " TEXT)";
+                BEER_NAME + " TEXT," + BEER_RATING + " INTEGER," + USER_NAME + " TEXT," + BREWERY + " TEXT)";
 
         db.execSQL(CREATE_BEER_TABLE);
     }

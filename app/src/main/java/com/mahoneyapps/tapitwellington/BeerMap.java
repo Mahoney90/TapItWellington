@@ -3,7 +3,6 @@ package com.mahoneyapps.tapitwellington;
 import android.Manifest;
 import android.annotation.TargetApi;
 import android.app.Fragment;
-import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.pm.PackageManager;
@@ -13,13 +12,16 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -58,10 +60,19 @@ public class BeerMap extends Fragment implements OnMapReadyCallback,
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.activity_maps, container, false);
+        Log.d("oncreate view beermap", "yes");
+
+        AppCompatActivity activity = ((AppCompatActivity) getActivity());
+        TextView toolbar = (TextView)activity.findViewById(R.id.toolbar_title);
+        toolbar.setText("Beer Map");
 
         MapFragment mapFragment = (MapFragment) getChildFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
+
+        if (container != null) {
+            container.removeAllViews();
+        }
         return view;
 
     }
@@ -69,7 +80,7 @@ public class BeerMap extends Fragment implements OnMapReadyCallback,
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
+        Log.d("on view created beermap", "yes");
         setHasOptionsMenu(true);
 
         mGoogleApiClient = new GoogleApiClient.Builder(getActivity()).addConnectionCallbacks(this)
@@ -91,6 +102,7 @@ public class BeerMap extends Fragment implements OnMapReadyCallback,
     @Override
     public void onStop() {
         super.onStop();
+        Log.d("on stop beermap", "yes");
         if ((mGoogleApiClient != null) && mGoogleApiClient.isConnected()) {
             mGoogleApiClient.disconnect();
         }
@@ -99,11 +111,12 @@ public class BeerMap extends Fragment implements OnMapReadyCallback,
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        FragmentManager fm = getActivity().getFragmentManager();
-        Fragment fragment = (fm.findFragmentById(R.id.map));
-        FragmentTransaction ft = fm.beginTransaction();
-        ft.remove(fragment);
-        ft.commit();
+        Log.d("on destroy view beermap", "yes");
+//        FragmentManager fm = getActivity().getFragmentManager();
+//        Fragment fragment = (fm.findFragmentById(R.id.map));
+//        FragmentTransaction ft = fm.beginTransaction();
+//        ft.remove(fragment);
+//        ft.commit();
     }
 
 //    private void addListeners() {
@@ -122,11 +135,12 @@ public class BeerMap extends Fragment implements OnMapReadyCallback,
 
         addPubToMap(googleMap, "Garage Project", -41.2952851, 174.7678296, "Brewery");
         addPubToMap(googleMap, "The Malthouse", -41.2935125, 174.7816054, "Pub");
-        addPubToMap(googleMap, "The Hop Garden", -41.2971731, 174.7829048, "Pub");
+        addPubToMap(googleMap, "Black Dog", -41.2933809, 174.7833346, "Brewery");
         addPubToMap(googleMap, "The Rogue and Vagabond", -41.2934317, 174.774445, "Pub");
         addPubToMap(googleMap, "Parrotdog", -41.2968188, 174.780145, "Brewery");
         addPubToMap(googleMap, "Fork and Brewer", -41.2892497, 174.7756269, "BrewPub");
         addPubToMap(googleMap, "Little Beer Quarter", -41.2907123, 174.7749561, "Pub");
+        addPubToMap(googleMap, "Southern Cross", -41.2965, 174.7744654, "Pub");
 
         mMap.setOnInfoWindowClickListener(this);
         mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
@@ -136,29 +150,40 @@ public class BeerMap extends Fragment implements OnMapReadyCallback,
                 String title = marker.getTitle();
                 FragmentTransaction ft = ((FragmentActivity) getActivity()).getFragmentManager()
                         .beginTransaction();
+                TabLayout layout = (TabLayout) getActivity().findViewById(R.id.tab_layout);
                 switch (title){
 
                     case "Garage Project":
-                        ft.replace(R.id.map, new GarageProject()).addToBackStack(null).commit();
+                        layout.getTabAt(1).select();
+                        ft.add(R.id.frame, new GarageProject()).addToBackStack(null).commit();
                         break;
-//                    case "The Hop Garden":
-//                        ft.replace(R.id.map, new HopGarden()).commit();
-//                        break;
-//                    case "The Malthouse":
-//                        ft.replace(R.id.map, new Malthouse()).commit();
-//                        break;
-//                    case "The Rogue and Vagabond":
-//                        ft.replace(R.id.map, new RogueAndVagabond()).commit();
-//                        break;
-//                    case "Parrotdog":
-//                        ft.replace(R.id.map, new Parrotdog()).commit();
-//                        break;
-//                    case "Fork and Brewer":
-//                        ft.replace(R.id.map, new ForkAndBrewer()).commit();
-//                        break;
-//                    case "Little Beer Quarter":
-//                        ft.replace(R.id.map, new LittleBeerQuarter()).commit();
-//                        break;
+                    case "Black Dog":
+                        layout.getTabAt(1).select();
+                        ft.add(R.id.frame, new HopGarden()).addToBackStack(null).commit();
+                        break;
+                    case "The Malthouse":
+                        layout.getTabAt(1).select();
+                        ft.add(R.id.frame, new Malthouse()).addToBackStack(null).commit();
+                        break;
+                    case "The Rogue and Vagabond":
+                        layout.getTabAt(1).select();
+                        ft.add(R.id.frame, new RogueAndVagabond()).addToBackStack(null).commit();
+                        break;
+                    case "Parrotdog":
+                        layout.getTabAt(1).select();
+                        ft.add(R.id.frame, new Parrotdog()).commit();
+                        break;
+                    case "Fork and Brewer":
+                        layout.getTabAt(1).select();
+                        ft.add(R.id.frame, new NewFork()).commit();
+                        break;
+                    case "Little Beer Quarter":
+                        layout.getTabAt(1).select();
+                        ft.add(R.id.frame, new LittleBeerQuarter()).commit();
+                        break;
+                    case "Southern Cross":
+                        layout.getTabAt(1).select();
+                        ft.add(R.id.frame, new SouthernCross()).commit();
 
                 }
             }
@@ -222,11 +247,13 @@ public class BeerMap extends Fragment implements OnMapReadyCallback,
                 // for Activity#requestPermissions for more details.
                 return;
             }
+            // lastlocation works but location doesn't, edit code appropriately
+            lastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
             Location location = locationManager.getLastKnownLocation(provider);
             Log.d("location", String.valueOf(location));
             locationManager.requestLocationUpdates(provider, 1000, 0, this);
             Log.d("Cam", String.valueOf(lastLocation));
-            properZoom(location);
+            properZoom(lastLocation);
         }
 
     }

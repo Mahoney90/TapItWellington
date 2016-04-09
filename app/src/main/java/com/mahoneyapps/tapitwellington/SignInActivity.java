@@ -23,16 +23,24 @@ public class SignInActivity extends AppCompatActivity {
 
         mSharedPreferences = getSharedPreferences(LOGIN_STATE, Context.MODE_PRIVATE);
         boolean isLoggedIn = mSharedPreferences.getBoolean("loggedin", false);
+        String theUserName = mSharedPreferences.getString("name", "Name:");
         Log.d("is Logged in?", String.valueOf(isLoggedIn));
+        Log.d("user name transfer", theUserName);
         if (mSharedPreferences.getBoolean("loggedin", false)){
             Log.d("intent to main", "good");
             Intent i = new Intent(SignInActivity.this, MainActivity.class);
+            Bundle bundle = new Bundle();
+            bundle.putString("user name", theUserName);
+            i.putExtras(bundle);
             startActivity(i);
         } else {
             Log.d("NO intent to main", "oh man");
             FragmentTransaction ft = getFragmentManager().beginTransaction();
             ft.add(R.id.frame_for_sign_in, new SignInFragment()).commit();
         }
+
+//        FragmentTransaction ft = getFragmentManager().beginTransaction();
+//        ft.add(R.id.frame_for_sign_in, new SignInFragment()).commit();
 
     }
 

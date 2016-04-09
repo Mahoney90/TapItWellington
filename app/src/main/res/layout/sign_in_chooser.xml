@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:facebook="http://schemas.android.com/apk/res-auto"
+              xmlns:tools="http://schemas.android.com/tools"
+              android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:weightSum="1">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Sign in once and you never have to again!"
+        android:textStyle="italic"
+        android:layout_gravity="center"
+        android:layout_marginTop="15dp"
+        android:layout_marginBottom="55dp"/>
+
+    <com.google.android.gms.common.SignInButton
+        android:id="@+id/google_button"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:layout_marginTop="40dp"
+        android:layout_marginBottom="45dp"
+        tools:context="GoogleSignIn"
+        android:layout_gravity="center">
+
+    </com.google.android.gms.common.SignInButton>
+
+    <com.facebook.login.widget.LoginButton
+        android:id="@+id/facebook_button"
+        android:layout_height="wrap_content"
+        android:layout_width="175dp"
+        android:text="Facebook"
+        android:onClick="signInToFacebook"
+        android:layout_weight="0.17"
+        android:layout_gravity="center"
+        facebook:com_facebook_login_text="LOGIN"
+        facebook:com_facebook_logout_text="LOGOUT">
+
+    </com.facebook.login.widget.LoginButton>
+
+</LinearLayout>

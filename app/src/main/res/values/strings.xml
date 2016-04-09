@@ -6,4 +6,8 @@
     <string name="title_activity_maps">Map</string>
     <string name="facebook_app_id">1093971263996368</string>
     <string name="google_app_id">199497613324</string>
+    <string name="signed_in">Signed in</string>
+    <string name="signed_out">Signed out</string>
+    <string name="loading">Loading</string>
+    <string name="server_client_id">199497613324-jmki99d6hvcrn8p7982ih9vtepisrkj0.apps.googleusercontent.com</string>
 </resources>

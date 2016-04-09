@@ -5,14 +5,23 @@
                 android:id="@+id/recycler_view_layout_container"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                tools:context=".PubListRecyclerActivity">
+                tools:context=".PubListRecyclerActivity"
+                android:clipToPadding="false"
+                android:background="#fff"
+                >
     <android.support.v7.widget.RecyclerView
         android:id="@+id/list_recycler_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:scrollbars="vertical"
-        android:padding="10dp"
-        android:background="#ffe0b2"
+        android:focusable="true"
+        android:clickable="true"
+        android:drawSelectorOnTop="true"
+        android:listSelector="@drawable/ripple"
+        android:elevation="55dp"
+        android:paddingTop="10dp"
+        android:paddingRight="5dp"
+        android:paddingLeft="5dp"
         />
 
 </RelativeLayout>
