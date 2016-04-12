@@ -1,10 +1,10 @@
 package com.mahoneyapps.tapitwellington;
 
 import android.app.Fragment;
-import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Context;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentActivity;
@@ -47,8 +47,12 @@ public class PubListFragment extends Fragment {
 
         AppCompatActivity activity = ((AppCompatActivity) getActivity());
         TextView toolbar = (TextView)activity.findViewById(R.id.toolbar_title);
+        Typeface typeface = Typeface.createFromAsset(getActivity().getAssets(), "fonts/Risaltype.ttf");
+        toolbar.setTypeface(typeface);
+        // set toolbar text
         toolbar.setText("Pub List");
 
+        // prevent overlapping views if container view exists
         if (container != null) {
             container.removeAllViews();
         }
@@ -60,9 +64,11 @@ public class PubListFragment extends Fragment {
         mLayoutManager = new LinearLayoutManager(getActivity());
         mRecyclerList.setLayoutManager(mLayoutManager);
 
+        // add list of Breweries/Pubs to adapter
         mAdapter = new PubRecyclerViewAdapter(mPubsList);
         mRecyclerList.setAdapter(mAdapter);
 
+        // add divider with margin
         mRecyclerList.addItemDecoration(new HorizontalDividerItemDecoration.Builder(getActivity()).
                 color(Color.rgb(255, 255, 255)).size(90).build());
 
@@ -75,9 +81,11 @@ public class PubListFragment extends Fragment {
 
         mPubsList = new ArrayList<>();
 
+        // Add currently supported breweries/pubs to String array
         String[] pubList = {"Garage Project", "Black Dog", "Rogue and Vaganbond", "The Malthouse",
                 "Parrotdog", "Fork and Brewer", "Little Beer Quarter", "Southern Cross"};
 
+        // Create a new Pub object for each venue, add it to Pub List ArrayList
         for (int index = 0; index < pubList.length ; index++){
             Pub p = new Pub(pubList[index]);
             mPubsList.add(index, p);
@@ -86,6 +94,7 @@ public class PubListFragment extends Fragment {
         Log.v("Test", String.valueOf(mPubsList.size()));
         Log.v("Testing", String.valueOf(mPubsList));
 
+        // notify the adapter about data changes
         mAdapter.notifyDataSetChanged();
     }
 
@@ -99,7 +108,6 @@ public class PubListFragment extends Fragment {
         public PubHolder onCreateViewHolder(ViewGroup parent, int i) {
             LayoutInflater inflater = LayoutInflater.from(parent.getContext());
             View view = inflater.inflate(R.layout.pub_item, parent, false);
-            TextView pubTextView = (TextView) view.findViewById(R.id.pub_text_view);
             view.setOnClickListener(mItemClickListener);
 
             Log.d("context2", String.valueOf(mContext));
@@ -109,8 +117,10 @@ public class PubListFragment extends Fragment {
 
         @Override
         public void onBindViewHolder(PubHolder holder, int position) {
+            // set text view to the Pub name in its position in the ArrayList
             holder.pubTextView.setText(mPubsList.get(position).getPubName());
 
+            // change background for even numbered Breweries/Pubs in the ArrayList
             if (position % 2 == 0){
                 holder.relativeLayout.setBackgroundResource(R.drawable.shape_dark);
             }
@@ -118,6 +128,7 @@ public class PubListFragment extends Fragment {
 
         @Override
         public int getItemCount() {
+            // return size of Pub List
             return mPubsList.size();
         }
 
@@ -140,28 +151,20 @@ public class PubListFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 int position = getAdapterPosition();
-
                 Log.d("position", String.valueOf(position));
 
                 openTapList(position);
-
             }
 
             private void openTapList(int position) {
-                FragmentManager fm = getFragmentManager();
-                for (int entry = 0; entry < fm.getBackStackEntryCount(); entry++){
-                    Log.i("Fragment found", fm.getBackStackEntryAt(entry).toString());
-                }
+                // open a new Fragment correlating to the brewery/pub that was clicked upon
                 FragmentTransaction ft = ((FragmentActivity)mContext).getFragmentManager().beginTransaction();
                 int viewIDToReplace = R.id.frame;
                 switch (position){
                     case 0:
-                        ft.replace(viewIDToReplace, new GarageProject()).addToBackStack("add gp").commit();
+                        ft.replace(viewIDToReplace, new GarageProject()).addToBackStack(null).commit();
                         break;
                     case 1:
-                        Log.d("clicked Black Dog", String.valueOf(viewIDToReplace));
-                        Log.d("clicked BD ft", String.valueOf(ft));
-                        Log.d("click on BD", String.valueOf(new BlackDog()));
                         ft.replace(viewIDToReplace, new BlackDog()).addToBackStack(null).commit();
                         break;
                     case 2:
@@ -192,6 +195,7 @@ public class PubListFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
+        // re-initialize PubList onResume
         mPubsList = new ArrayList<>();
         getPubList();
     }

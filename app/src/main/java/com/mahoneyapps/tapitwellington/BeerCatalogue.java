@@ -27,9 +27,12 @@ public class BeerCatalogue {
         this.mBrewery = brewery;
     }
 
+    // if a general call to the Catalogue is needed without passing any arguments
     public BeerCatalogue(){
 
     }
+
+    // getters and setters
 
     public int getID(){
         return m_ID;

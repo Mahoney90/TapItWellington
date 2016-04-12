@@ -3,6 +3,7 @@ package com.mahoneyapps.tapitwellington;
 import android.app.Fragment;
 import android.content.Context;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -13,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,9 +41,12 @@ public class MostBeersFragment extends Fragment {
 
         AppCompatActivity activity = ((AppCompatActivity) getActivity());
         TextView toolbar = (TextView) activity.findViewById(R.id.toolbar_title);
-        toolbar.setText("Most Popular Beers");
-//        activity.getSupportActionBar().setTitle("Recent Beers");
+        // Set toolbar text
+        Typeface typeface = Typeface.createFromAsset(getActivity().getAssets(), "fonts/Risaltype.ttf");
+        toolbar.setTypeface(typeface);
+        toolbar.setText("Most Popular");
 
+        // prevents views from overlaying one another
         if (container != null) {
             container.removeAllViews();
         }
@@ -52,9 +57,11 @@ public class MostBeersFragment extends Fragment {
         mLayoutManager = new LinearLayoutManager(getActivity());
         mRecyclerView.setLayoutManager(mLayoutManager);
 
+        // Pass Beer List and Count List to adapter
         mAdapter = new MostBeersAdapter(mBeerList, mCountList);
         mRecyclerView.setAdapter(mAdapter);
 
+        // Adds an item divider for the Recycler View
         mRecyclerView.addItemDecoration(new HorizontalDividerItemDecoration.Builder(getActivity()).
                 color(Color.rgb(153, 50, 204)).margin(40).build());
 
@@ -71,16 +78,33 @@ public class MostBeersFragment extends Fragment {
 
         mBeerHandler = new BeerHandler(getActivity());
         List<String> beersToAdd = new ArrayList<>();
+        // Get ArrayList of Beers sorted by highest count
         beersToAdd = mBeerHandler.getBeerLeadersInOrder();
 
+        // clear the BeerList, previously empty
         mBeerList.clear();
 
+        if (beersToAdd == null){
+            Toast.makeText(getActivity(), "Leaderboard is blank!", Toast.LENGTH_SHORT).show();
+        } else {
+
+
+        // For each beer in the ArrayList, set the TextView equal to the beer and then add it to the recently cleared ArrayList
         for (String beer : beersToAdd){
+            if (beer.length() > 25){
+                beer = beer.substring(0, 30);
+            }
             beerName.setText(beer);
             mBeerList.add(beer);
+            // limit list to 10 entries
+            if (mBeerList.size() >= 10){
+                return;
+            }
         }
 
+        // Notify our adapter to update with our newly added beers
         mAdapter.notifyDataSetChanged();
+        }
     }
 
     private class MostBeersAdapter extends RecyclerView.Adapter<MostBeersAdapter.MostBeersHolder> {
@@ -103,14 +127,20 @@ public class MostBeersFragment extends Fragment {
 
         @Override
         public void onBindViewHolder(MostBeersHolder holder, int position) {
+            // Set text view equal to the beer name
             holder.beerName.setText(String.valueOf(mBeerList.get(position)));
 
             String beer = String.valueOf(mBeerList.get(position));
             BeerHandler beerHandler = new BeerHandler(getActivity());
             int beerCount = beerHandler.getTotalCount(beer);
+
+            // Pass the beer name as an argument and return its overall count
             holder.count.setText(String.valueOf(beerCount));
+
+            // Set the text view equal to the beer rating
             holder.position.setText(String.valueOf(position + 1) + ".");
 
+            // On even numbered items, change background color
             if (position % 2 == 0){
                 holder.relativeLayout.setBackgroundResource(R.drawable.shape_dark);
             }
@@ -119,6 +149,7 @@ public class MostBeersFragment extends Fragment {
         @Override
         public int getItemCount() {
             Log.d("size", String.valueOf(mBeerList.size()));
+            // Return size of the beer list
             return mBeerList.size();
         }
 
@@ -133,6 +164,7 @@ public class MostBeersFragment extends Fragment {
             public MostBeersHolder(View itemView, Context context) {
                 super(itemView);
                 mContext = context;
+                // Initialize some text views in our Leaderboard Row (number in list, beer name, count)
                 beerName = (TextView) itemView.findViewById(R.id.leaderboard_beer_name);
                 count = (TextView) itemView.findViewById(R.id.leaderboard_count);
                 position = (TextView) itemView.findViewById(R.id.leaderboard_position);

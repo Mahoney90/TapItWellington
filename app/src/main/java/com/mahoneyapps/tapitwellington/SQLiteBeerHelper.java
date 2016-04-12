@@ -17,7 +17,7 @@ import java.util.ArrayList;
 public class SQLiteBeerHelper extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "Tap It DB";
-    private static final int DATABASE_VERSION = 2;
+    private static final int DATABASE_VERSION = 3;
     protected static final String TABLE_BEERS = "beers";
     public static final String KEY_ID = "id";
     public static final String BEER_NAME = "name";
@@ -32,6 +32,7 @@ public class SQLiteBeerHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
+        // Create table named "beers", add columns for ID, beer name, beer rating, user name and brewery
         String CREATE_BEER_TABLE = "CREATE TABLE " + TABLE_BEERS + "(" + KEY_ID + " INTEGER PRIMARY KEY," +
                 BEER_NAME + " TEXT," + BEER_RATING + " INTEGER," + USER_NAME + " TEXT," + BREWERY + " TEXT)";
 
@@ -40,6 +41,7 @@ public class SQLiteBeerHelper extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        // Drops the old table and calls onCreate if a new version number is detected
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_BEERS);
         onCreate(db);
     }
@@ -52,7 +54,7 @@ public class SQLiteBeerHelper extends SQLiteOpenHelper {
     public ArrayList<Cursor> getData(String Query){
         //get writable database
         SQLiteDatabase sqlDB = this.getWritableDatabase();
-        String[] columns = new String[] { "mesage" };
+        String[] columns = new String[] { "message" };
         //an array list of cursor to save two cursors one has results from the query
         //other cursor stores error message if any errors are triggered
         ArrayList<Cursor> alc = new ArrayList<Cursor>(2);
@@ -60,12 +62,10 @@ public class SQLiteBeerHelper extends SQLiteOpenHelper {
         alc.add(null);
         alc.add(null);
 
-
         try{
             String maxQuery = Query ;
             //execute the query results will be save in Cursor c
             Cursor c = sqlDB.rawQuery(maxQuery, null);
-
 
             //add value to cursor2
             Cursor2.addRow(new Object[] { "Success" });
@@ -73,19 +73,21 @@ public class SQLiteBeerHelper extends SQLiteOpenHelper {
             alc.set(1,Cursor2);
             if (null != c && c.getCount() > 0) {
 
-
                 alc.set(0,c);
                 c.moveToFirst();
 
                 return alc ;
             }
             return alc;
+
+            // handle exceptions
         } catch(SQLException sqlEx){
             Log.d("printing exception", sqlEx.getMessage());
             //if any exceptions are triggered save the error message to cursor an return the arraylist
             Cursor2.addRow(new Object[] { ""+sqlEx.getMessage() });
             alc.set(1,Cursor2);
             return alc;
+
         } catch(Exception ex){
 
             Log.d("printing exception", ex.getMessage());

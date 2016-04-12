@@ -4,7 +4,9 @@ import android.app.Fragment;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -42,6 +44,8 @@ public class MyBeerHistory extends Fragment {
     static String mUsername;
     SharedPreferences mSharedPreferences;
 
+
+    // Bundle passed from Sign In to store user's name, pass to MyBeerHistory class
     public static MyBeerHistory newHistory(Bundle b){
         MyBeerHistory mbh = new MyBeerHistory();
         mbh.setArguments(b);
@@ -66,20 +70,29 @@ public class MyBeerHistory extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mContext = getActivity();
+
     }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
         Log.d("on create view", "on create");
+        GoogleSignIn newGSI = new GoogleSignIn();
+        mUsername = newGSI.getPrefs("name", GoogleSignIn.appContext);
+
         View view = inflater.inflate(R.layout.beer_history_layout, container, false);
         view.setClipToOutline(true);
 
         AppCompatActivity activity = ((AppCompatActivity) getActivity());
-        TextView toolbar = (TextView)activity.findViewById(R.id.toolbar_title);
-        toolbar.setText("My History");
-//        activity.getSupportActionBar().setTitle("Recent Beers");
 
+        TextView toolbar = (TextView)activity.findViewById(R.id.toolbar_title);
+        Typeface typeface = Typeface.createFromAsset(getActivity().getAssets(), "fonts/Risaltype.ttf");
+        toolbar.setTypeface(typeface);
+        // Set toolbar text
+        toolbar.setText("My History");
+
+        // prevents views from overlaying one another
         if (container != null) {
             container.removeAllViews();
         }
@@ -90,15 +103,13 @@ public class MyBeerHistory extends Fragment {
         mLayoutManager = new LinearLayoutManager(getActivity());
         mRecyclerView.setLayoutManager(mLayoutManager);
 
+        // Pass beer list and rating list into adapter
         mAdapter = new HistoryAdapter(mBeerList, mRatingList);
         mRecyclerView.setAdapter(mAdapter);
 
+        // Add item divider with margin
         mRecyclerView.addItemDecoration(new HorizontalDividerItemDecoration.Builder(getActivity()).
                 color(Color.rgb(255, 255, 255)).size(90).build());
-
-//        mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(GoogleSignIn.class);
-//        mUsername = mSharedPreferences.getString("account name", "duh");
-//        Log.d("the user name in MBH", mUsername);
 
         getBeerName();
 
@@ -110,50 +121,56 @@ public class MyBeerHistory extends Fragment {
 
         TextView tvName;
         TextView tvBrewery;
-//        mBeerList = new ArrayList<>();
-//        mRatingList = new ArrayList<>();
 
         LayoutInflater inflater = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View view = inflater.inflate(R.layout.beer_history_layout, null, false);
         tvName = (TextView) view.findViewById(R.id.beer_name_for_history);
         tvBrewery = (TextView) view.findViewById(R.id.brewery);
         mBeerHandler = new BeerHandler(getActivity());
-//        for (HashMap<String, Integer> line : beerHandler.getUserHistory("Debbie")){
-//            Log.d("hashmap while", String.valueOf(line));
-//        }
+
         List<String> beersToAdd = new ArrayList<>();
         Log.d("user beer history", beersToAdd.toString());
+        Log.d("user history user name", mUsername);
         if (mBeerHandler.getUserBeerHistory(mUsername) == null ){
+            // user has not rated any beers
             Log.d("less than 1", "returned null");
             Toast.makeText(mContext, "DRINK MORE!", Toast.LENGTH_LONG).show();
         } else {
+            // user has rated beers
             Log.d("1 or more","didn't return null");
+            // get the beer history for the user
             beersToAdd = mBeerHandler.getUserBeerHistory(mUsername);
-
         }
 
+        // Clear Array Lists
         mBeerList.clear();
         mRatingList.clear();
 
-        //        for (int i=0; i < 10; i++){
         for (String beer : beersToAdd) {
-//            Log.d("get key", String.valueOf(entry.getKey()));
-//            String key = String.valueOf(entry.getKey());
+
+            // add the beer to the Beer List array
             tvName.setText(beer);
             mBeerList.add(beer);
             Log.d("beer list size", String.valueOf(mBeerList.size()));
+            // Pass the beer as an argument and return the brewery
             mBrewery = mBeerHandler.getBrewery(beer);
             Log.d("brewery", mBrewery);
-
         }
+
         LinkedHashSet<String> userSet = new LinkedHashSet<>();
         userSet.addAll(mBeerList);
+
+        // Clear beer list before adding Hashset
         mBeerList.clear();
         Log.d("beer list size2", String.valueOf(mBeerList.size()));
         mBeerList.addAll(userSet);
+
+        // Most recent check ins are at top
         Collections.reverse(mBeerList);
         Log.d("beer list size3", String.valueOf(mBeerList.size()));
         Log.d("size of linked set", String.valueOf(userSet.size()));
+
+        // Notify adapter of data changes
         mAdapter.notifyDataSetChanged();
 
     }
@@ -186,18 +203,28 @@ public class MyBeerHistory extends Fragment {
         @Override
         public void onBindViewHolder(BeerHistoryHolder holder, int position) {
             Log.d("on bind view holder", "okay");
+
+            // Set text view equal to the beer name
             holder.tvName.setText(String.valueOf(mBeerList.get(position)));
             String beer = String.valueOf(mBeerList.get(position));
             mBeerHandler = new BeerHandler(getActivity());
+
+            // Pass the beer name and user name as arguements to get the user's average rating for each beer
             String rating = mBeerHandler.getUserAvgRating(beer, mUsername);
+
+            // Set text view to the recently acquired average rating
             holder.tvRating.setText(rating);
+
+            // Set text view equal to the brewery/pub where the check-in occured
             holder.tvBrewery.setText(mBrewery);
 
+            // Change background for even numbered list items
             if (position % 2 == 0){
                 holder.relativeLayout.setBackgroundResource(R.drawable.shape_dark);
             }
 
             double ratingForCheck = Double.parseDouble(rating);
+            // If rating is 3 or above, show a thumbs up, if it is 2 or below, show a thumbs down
             if (ratingForCheck >= 3){
                 holder.thumbImage.setImageDrawable(getResources().getDrawable(R.mipmap.ic_thumb_up));
             }
@@ -212,6 +239,7 @@ public class MyBeerHistory extends Fragment {
         @Override
         public int getItemCount() {
             Log.d("size", String.valueOf(mBeerList.size()));
+            // return size of beer list
             return mBeerList.size();
         }
 
@@ -250,6 +278,7 @@ public class MyBeerHistory extends Fragment {
         super.onResume();
         mBeerList = new ArrayList<>();
         mRatingList = new ArrayList<>();
+        mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
 
         getBeerName();
     }

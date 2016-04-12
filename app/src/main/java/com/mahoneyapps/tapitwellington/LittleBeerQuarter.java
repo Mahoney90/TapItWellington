@@ -1,13 +1,12 @@
 package com.mahoneyapps.tapitwellington;
 
-import android.app.FragmentManager;
+import android.app.Fragment;
+import android.app.FragmentTransaction;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.app.Fragment;
 import android.support.v4.app.FragmentActivity;
-import android.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -41,17 +40,19 @@ public class LittleBeerQuarter extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.beer_list_view, container, false);
 
-
         AppCompatActivity activity = ((AppCompatActivity) getActivity());
         TextView toolbar = (TextView)activity.findViewById(R.id.toolbar_title);
-        toolbar.setText("Little Beer Quarter Tap List");
+        // Set toolbar text
+        toolbar.setText("Little Beer Quarter");
 
         mListView = (ListView) view.findViewById(R.id.list_view);
 
+        // prevents views from overlaying one another
         if (container != null) {
             container.removeAllViews();
         }
 
+        // Start Async task
         new LBQTask(getActivity()).execute();
 
         return view;
@@ -59,6 +60,8 @@ public class LittleBeerQuarter extends Fragment {
 
     private class LBQTask extends AsyncTask<Void, Void, ArrayList<String>> {
         Context mContext;
+
+        // URL to connect to
         String url = "http://littlebeerquarter.co.nz/now-pouring";
 
         public LBQTask(Context context){
@@ -82,12 +85,46 @@ public class LittleBeerQuarter extends Fragment {
                                                 "> div > div > div > div:gt(0)");
                 for (Element LBQ : elements){
                     beerName = LBQ.text();
+                    /* Determine if the 2nd letter of the first word is Uppercase. HTML is sloppy and no way
+                    to pinpoint just Beer name (will return type, brewery, etc). Pattern noticed that all beers
+                    have first word capitalized. Check that beer length is greater than one to avoid NPE, then
+                    check for capitalization.
+
+                    Then return text and add to ArrayList
+                     */
+
+                    //if beer name isn't null
                     if (beerName.length() > 1){
                         Log.d("length greater than 1", beerName);
                         secondLetter = beerName.charAt(1);
 
+                        // and if the second letter is upper case
                         if (Character.isUpperCase(secondLetter)){
                             Log.d("upper case", beerName);
+                            int spaceIndex = beerName.indexOf(" ");
+                            String firstWord = beerName.substring(0, spaceIndex);
+                            String restOfWord = beerName.substring(spaceIndex);
+                            Log.d("first word", firstWord);
+                            Log.d("rest of word", restOfWord);
+
+                            // for each character in the first word (which will be uppercase),
+                            // for the second characters and beyond, replace upper case letter with lower case
+                            for (int i=1; i < firstWord.length(); i++){
+
+                                char oldChar = beerName.charAt(i);
+                                Log.d("old char", String.valueOf(oldChar));
+                                char newChar = Character.toLowerCase(oldChar);
+                                Log.d("new char", String.valueOf(newChar));
+                                firstWord = firstWord.replace(oldChar, newChar);
+                                Log.d("new first word", firstWord);
+                                beerName = firstWord + restOfWord;
+                                String firstLetter = String.valueOf(beerName.charAt(0));
+                                String newFirstLetter = beerName.valueOf(Character.toUpperCase(firstLetter.charAt(0)));
+                                beerName = beerName.replaceFirst(firstLetter, newFirstLetter);
+
+                            }
+
+                            // add this newly formatted beer name to the array list
                             arrayListOfBeers.add(beerName);
                         }
 
@@ -106,6 +143,7 @@ public class LittleBeerQuarter extends Fragment {
         protected void onPostExecute(ArrayList<String> result) {
 
             ArrayAdapter adapter = new ArrayAdapter<String>(mContext, R.layout.pub_item, R.id.pub_text_view, result);
+            // Animation adapter to swing in from left
             SwingLeftInAnimationAdapter swingAdapter = new SwingLeftInAnimationAdapter(adapter);
             swingAdapter.setAbsListView(mListView);
             mListView.setAdapter(swingAdapter);
@@ -114,13 +152,11 @@ public class LittleBeerQuarter extends Fragment {
             mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    // Get position of item clicked, pass that as beer name
                     String spotInList = mListView.getItemAtPosition(position).toString();
                     Log.d("listview click test", spotInList);
 
-                    FragmentManager fm = getFragmentManager();
-                    for (int entry = 0; entry < fm.getBackStackEntryCount(); entry++){
-                        Log.i("Fragment found", fm.getBackStackEntryAt(entry).toString());
-                    }
+                    // Add bundle to Selected Beer View fragment, passing the beer name and brewery/pub name
                     FragmentTransaction ft = ((FragmentActivity) mContext).getFragmentManager().beginTransaction();
                     Bundle args = new Bundle();
                     args.putString("beer", spotInList);
@@ -128,9 +164,8 @@ public class LittleBeerQuarter extends Fragment {
                     SelectedBeerView sbv = new SelectedBeerView();
                     sbv.setArguments(args);
 
-
+                    // Add transaction to backstack for proper back navigation
                     ft.replace(R.id.frame, sbv).addToBackStack("add sbv").commit();
-
                 }
             });
 

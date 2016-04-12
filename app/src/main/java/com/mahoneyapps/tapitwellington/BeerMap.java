@@ -6,6 +6,7 @@ import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.graphics.Typeface;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
@@ -15,9 +16,9 @@ import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.InflateException;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -54,26 +55,42 @@ public class BeerMap extends Fragment implements OnMapReadyCallback,
     String mLatitudeText;
     String mLongitudeText;
     Context mContext = getActivity();
+    private final int MY_PERMISSIONS_REQUEST = 2;
+    private static View view1;
 
 
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.activity_maps, container, false);
+        if (view1 != null) {
+            ViewGroup parent = (ViewGroup) view1.getParent();
+
+            if (parent != null)
+                parent.removeView(view1);
+        }
+
+        if (container != null) {
+            container.removeAllViews();
+        }
+
+        try {
+            view1 = inflater.inflate(R.layout.activity_maps, container, false);
+        } catch (InflateException e){
+
+        }
         Log.d("oncreate view beermap", "yes");
 
         AppCompatActivity activity = ((AppCompatActivity) getActivity());
+
         TextView toolbar = (TextView)activity.findViewById(R.id.toolbar_title);
+        Typeface typeface = Typeface.createFromAsset(getActivity().getAssets(), "fonts/Risaltype.ttf");
+        toolbar.setTypeface(typeface);
         toolbar.setText("Beer Map");
 
         MapFragment mapFragment = (MapFragment) getChildFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
-
-        if (container != null) {
-            container.removeAllViews();
-        }
-        return view;
+        return view1;
 
     }
 
@@ -151,39 +168,39 @@ public class BeerMap extends Fragment implements OnMapReadyCallback,
                 FragmentTransaction ft = ((FragmentActivity) getActivity()).getFragmentManager()
                         .beginTransaction();
                 TabLayout layout = (TabLayout) getActivity().findViewById(R.id.tab_layout);
-                switch (title){
+                switch (title) {
 
                     case "Garage Project":
                         layout.getTabAt(1).select();
-                        ft.add(R.id.frame, new GarageProject()).addToBackStack(null).commit();
+                        ft.replace(R.id.frame, new GarageProject()).addToBackStack(null).commit();
                         break;
                     case "Black Dog":
                         layout.getTabAt(1).select();
-                        ft.add(R.id.frame, new HopGarden()).addToBackStack(null).commit();
+                        ft.replace(R.id.frame, new BlackDog()).addToBackStack(null).commit();
                         break;
                     case "The Malthouse":
                         layout.getTabAt(1).select();
-                        ft.add(R.id.frame, new Malthouse()).addToBackStack(null).commit();
+                        ft.replace(R.id.frame, new Malthouse()).addToBackStack(null).commit();
                         break;
                     case "The Rogue and Vagabond":
                         layout.getTabAt(1).select();
-                        ft.add(R.id.frame, new RogueAndVagabond()).addToBackStack(null).commit();
+                        ft.replace(R.id.frame, new RogueAndVagabond()).addToBackStack(null).commit();
                         break;
                     case "Parrotdog":
                         layout.getTabAt(1).select();
-                        ft.add(R.id.frame, new Parrotdog()).commit();
+                        ft.replace(R.id.frame, new Parrotdog()).commit();
                         break;
                     case "Fork and Brewer":
                         layout.getTabAt(1).select();
-                        ft.add(R.id.frame, new NewFork()).commit();
+                        ft.replace(R.id.frame, new NewFork()).commit();
                         break;
                     case "Little Beer Quarter":
                         layout.getTabAt(1).select();
-                        ft.add(R.id.frame, new LittleBeerQuarter()).commit();
+                        ft.replace(R.id.frame, new LittleBeerQuarter()).commit();
                         break;
                     case "Southern Cross":
                         layout.getTabAt(1).select();
-                        ft.add(R.id.frame, new SouthernCross()).commit();
+                        ft.replace(R.id.frame, new SouthernCross()).commit();
 
                 }
             }
@@ -202,10 +219,11 @@ public class BeerMap extends Fragment implements OnMapReadyCallback,
 
     @Override
     public void onConnected(Bundle bundle) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
+            Log.d("sdk 23", "yup");
+
         if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED &&
-                ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION)
-                        != PackageManager.PERMISSION_GRANTED) {
+                != PackageManager.PERMISSION_GRANTED) {
             Log.d("no permission", "no permission");
             // TODO: Consider calling
             //    public void requestPermissions(@NonNull String[] permissions, int requestCode)
@@ -215,19 +233,34 @@ public class BeerMap extends Fragment implements OnMapReadyCallback,
             // to handle the case where the user grants the permission. See the documentation
             // for Activity#requestPermissions for more details.
 
-            lastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
-            if (lastLocation == null){
-                if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION)
-                        != PackageManager.PERMISSION_GRANTED){
+//            lastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+//            if (lastLocation == null){
+//                if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION)
+//                        != PackageManager.PERMISSION_GRANTED){
 
+            requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, MY_PERMISSIONS_REQUEST);
 
-                    ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 2);
-                    lastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
-                    properZoom(lastLocation);
+//            if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION)
+//                        != PackageManager.PERMISSION_GRANTED) {
+//                LocationManager locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
+//                Criteria criteria = new Criteria();
+//                String provider = String.valueOf(locationManager.getBestProvider(criteria, false));
+//                lastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+//                Location location = locationManager.getLastKnownLocation(provider);
+//                Log.d("location", String.valueOf(location));
+//                locationManager.requestLocationUpdates(provider, 1000, 0, this);
+//                Log.d("Cam", String.valueOf(lastLocation));
+//                properZoom(lastLocation);
+//            } else {
+//
+//            }
+//                    ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 2);
+//                    lastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+//                    properZoom(lastLocation);
 
-                }
+//                }
 
-            }
+//            }
 
         } else {
             Log.d("permission", "yes permission");
@@ -235,9 +268,7 @@ public class BeerMap extends Fragment implements OnMapReadyCallback,
             Criteria criteria = new Criteria();
             String provider = String.valueOf(locationManager.getBestProvider(criteria, false));
             if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION)
-                    != PackageManager.PERMISSION_GRANTED &&
-                    ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION)
-                            != PackageManager.PERMISSION_GRANTED) {
+                    != PackageManager.PERMISSION_GRANTED) {
                 // TODO: Consider calling
                 //    public void requestPermissions(@NonNull String[] permissions, int requestCode)
                 // here to request the missing permissions, and then overriding
@@ -255,22 +286,34 @@ public class BeerMap extends Fragment implements OnMapReadyCallback,
             Log.d("Cam", String.valueOf(lastLocation));
             properZoom(lastLocation);
         }
+        } else {
+            Log.d("not 23", "nope");
+            LocationManager locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
+            Criteria criteria = new Criteria();
+            String provider = String.valueOf(locationManager.getBestProvider(criteria, false));
+            lastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+            Location location = locationManager.getLastKnownLocation(provider);
+            Log.d("location", String.valueOf(location));
+            locationManager.requestLocationUpdates(provider, 1000, 0, this);
+            Log.d("Cam", String.valueOf(lastLocation));
+            properZoom(lastLocation);
 
+        }
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        Log.d("requesting perms", "woo");
         switch (requestCode) {
-            case 2: {
+            case MY_PERMISSIONS_REQUEST: {
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    Log.d("on request granted", "woo");
 
-                    LocationManager locationManager = (LocationManager) mContext.getSystemService(Context.LOCATION_SERVICE);
+                    LocationManager locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
                     Criteria criteria = new Criteria();
                     String provider = String.valueOf(locationManager.getBestProvider(criteria, true));
-                    if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION)
-                            != PackageManager.PERMISSION_GRANTED &&
-                            ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION)
-                                    != PackageManager.PERMISSION_GRANTED) {
+                    if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION)
+                            != PackageManager.PERMISSION_GRANTED) {
                         // TODO: Consider calling
                         //    public void requestPermissions(@NonNull String[] permissions, int requestCode)
                         // here to request the missing permissions, and then overriding
@@ -280,11 +323,15 @@ public class BeerMap extends Fragment implements OnMapReadyCallback,
                         // for Activity#requestPermissions for more details.
                         return;
                     }
+                    lastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+                    Location location = locationManager.getLastKnownLocation(provider);
+                    Log.d("location", String.valueOf(location));
                     locationManager.requestLocationUpdates(provider, 1000, 0, this);
                     Log.d("Cam", String.valueOf(lastLocation));
                     properZoom(lastLocation);
-                } else {
 
+                } else {
+                    Log.d("wrong request code", "hmm");
                 }
 
             }

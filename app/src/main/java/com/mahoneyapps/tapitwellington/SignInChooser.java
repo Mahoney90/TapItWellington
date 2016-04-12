@@ -21,15 +21,18 @@ public class SignInChooser extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        // Necessary to initialize Facebook SDK right away
         FacebookSdk.sdkInitialize(this.getApplicationContext());
         setContentView(R.layout.sign_in_chooser);
 
+        // gets login state, either true or false based on whether or not the user has previously logged in
         mSharedPreferences = getSharedPreferences(LOGIN_STATE, Context.MODE_PRIVATE);
         boolean isLoggedIn = mSharedPreferences.getBoolean("loggedin", false);
-        String name = mSharedPreferences.getString("name", "duh");
+//        String name = mSharedPreferences.getString("name", "duh");
 
+        // if user is logged in, go right to main activity
         Log.d("is chooser Logged in?", String.valueOf(isLoggedIn));
-        if (mSharedPreferences.getBoolean("loggedin", false) && !mSharedPreferences.getString("name", "duh").equals("duh")){
+        if (mSharedPreferences.getBoolean("loggedin", false)){
             Log.d("intent to main", "good");
             Intent i = new Intent(this, MainActivity.class);
             startActivity(i);
@@ -37,6 +40,7 @@ public class SignInChooser extends AppCompatActivity {
 
     }
 
+    // Intent to open Google sign in, registered via user click on Google Login button
     public void signInToGoogle(View view){
         Log.d("signing in to google", "yes..");
         Intent openGoogleSignIn = new Intent(this, GoogleSignIn.class);
@@ -44,6 +48,7 @@ public class SignInChooser extends AppCompatActivity {
 
     }
 
+    // Intent to open Facebook sign in, registered via user click on Facebook Login button
     public void signInToFacebook(View view){
         Intent openFacebookSignIn = new Intent(this, SignInActivity.class);
         startActivity(openFacebookSignIn);

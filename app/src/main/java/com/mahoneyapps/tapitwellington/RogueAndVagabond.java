@@ -43,14 +43,17 @@ public class RogueAndVagabond extends Fragment {
 
         AppCompatActivity activity = ((AppCompatActivity) getActivity());
         TextView toolbar = (TextView)activity.findViewById(R.id.toolbar_title);
-        toolbar.setText("Rogue and Vagabond Tap List");
+        // change toolbar title
+        toolbar.setText("Rogue & Vagabond");
 
         mListView = (ListView) view.findViewById(R.id.list_view);
 
+        // prevents views from overlaying one another
         if (container != null) {
             container.removeAllViews();
         }
 
+        // Start Async task
         new RogueTask(getActivity()).execute();
 
         return view;
@@ -58,6 +61,8 @@ public class RogueAndVagabond extends Fragment {
 
     private class RogueTask extends AsyncTask<Void, Void, ArrayList<String>> {
         Context mContext;
+
+        // URL to connect to in background
         String url = "http://rogueandvagabond.co.nz/drinks/";
 
         public RogueTask(Context context){
@@ -72,16 +77,15 @@ public class RogueAndVagabond extends Fragment {
             try {
                 Document doc = Jsoup.connect(url).get();
                 Elements elements = doc.select("ul.beer-list > li > span.beer-name");
+                // for each Beer name, get the text and add it to our array list of beers
                 for (Element beer : elements){
                     beerName = beer.text();
                     arrBeerList.add(beerName);
                 }
 
-
             } catch (IOException e) {
                 e.printStackTrace();
             }
-
 
             return arrBeerList;
         }
@@ -89,6 +93,7 @@ public class RogueAndVagabond extends Fragment {
         @Override
         protected void onPostExecute(ArrayList<String> result) {
             ArrayAdapter adapter = new ArrayAdapter<String>(mContext, R.layout.pub_item, R.id.pub_text_view, result);
+            // Animation adapter to swing in from left
             SwingLeftInAnimationAdapter swingAdapter = new SwingLeftInAnimationAdapter(adapter);
             swingAdapter.setAbsListView(mListView);
             mListView.setAdapter(swingAdapter);
@@ -96,9 +101,11 @@ public class RogueAndVagabond extends Fragment {
             mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    // Get position of item clicked, pass that as beer name
                     String spotInList = mListView.getItemAtPosition(position).toString();
                     Log.d("listview click test", spotInList);
 
+                    // Add bundle to Selected Beer View fragment, passing the beer name and brewery/pub name
                     FragmentTransaction ft = ((FragmentActivity) mContext).getFragmentManager().beginTransaction();
                     Bundle args = new Bundle();
                     args.putString("beer", spotInList);
@@ -106,6 +113,7 @@ public class RogueAndVagabond extends Fragment {
                     SelectedBeerView sbv = new SelectedBeerView();
                     sbv.setArguments(args);
 
+                    // Add transaction to backstack for proper back navigation
                     ft.replace(R.id.frame, sbv).addToBackStack("add sbv").commit();
 
                 }

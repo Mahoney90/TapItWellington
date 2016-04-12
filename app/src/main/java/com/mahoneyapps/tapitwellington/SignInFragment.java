@@ -1,7 +1,6 @@
 package com.mahoneyapps.tapitwellington;
 
 import android.app.Fragment;
-import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -36,11 +35,13 @@ public class SignInFragment extends Fragment {
     private ProfileTracker mProfileTracker;
     SharedPreferences mSharedPreferences;
     public static final String LOGIN_STATE = "Login State";
+    public static Context facebookContext;
 
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        facebookContext = getActivity();
 
         FacebookSdk.sdkInitialize(getActivity().getApplicationContext());
         mCallbackManager = CallbackManager.Factory.create();
@@ -91,7 +92,7 @@ public class SignInFragment extends Fragment {
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        LoginButton loginButton = (LoginButton) view.findViewById(R.id.login_button);
+        final LoginButton loginButton = (LoginButton) view.findViewById(R.id.login_button);
         loginButton.setFragment(this);
         loginButton.registerCallback(mCallbackManager, mCallback);
         mTextDetails = (TextView) view.findViewById(R.id.welcome_message);
@@ -181,11 +182,13 @@ public class SignInFragment extends Fragment {
 //            FragmentTransaction ft = getFragmentManager().beginTransaction();
 //            ft.replace(R.id.frame, new PubListFragment()).commit();
             Log.d("get here", "did get here");
-            FragmentTransaction ft = getFragmentManager().beginTransaction();
-            ft.replace(R.id.frame_for_sign_in, new PubListFragment()).commit();
             Intent i = new Intent(getActivity(), MainActivity.class);
             i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            startActivity(i);
+
+            Intent ready = new Intent(getActivity(), GoogleSignIn.class);
+            ready.putExtra("name", name);
+            startActivity(ready);
+
             getActivity().finish();
 
         }

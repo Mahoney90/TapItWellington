@@ -1,8 +1,6 @@
 package com.mahoneyapps.tapitwellington;
 
 import android.app.FragmentTransaction;
-import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -20,27 +18,33 @@ public class SignInActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.sign_in_frame);
-
-        mSharedPreferences = getSharedPreferences(LOGIN_STATE, Context.MODE_PRIVATE);
-        boolean isLoggedIn = mSharedPreferences.getBoolean("loggedin", false);
-        String theUserName = mSharedPreferences.getString("name", "Name:");
-        Log.d("is Logged in?", String.valueOf(isLoggedIn));
-        Log.d("user name transfer", theUserName);
-        if (mSharedPreferences.getBoolean("loggedin", false)){
-            Log.d("intent to main", "good");
-            Intent i = new Intent(SignInActivity.this, MainActivity.class);
-            Bundle bundle = new Bundle();
-            bundle.putString("user name", theUserName);
-            i.putExtras(bundle);
-            startActivity(i);
-        } else {
+//
+//        mSharedPreferences = getSharedPreferences(LOGIN_STATE, Context.MODE_PRIVATE);
+//
+//        // retrieve login status (true = logged in, false = not logged in)
+//        boolean isLoggedIn = mSharedPreferences.getBoolean("loggedin", false);
+//
+//        // retrieve name of user
+//        String theUserName = mSharedPreferences.getString("name", "Name:");
+//
+//        Log.d("is Logged in?", String.valueOf(isLoggedIn));
+//        Log.d("user name transfer", theUserName);
+//
+//        if (mSharedPreferences.getBoolean("loggedin", false)){
+//
+//            // if user is already logged in, open Main Activity and pass user name as a bundle
+//            Log.d("intent to main", "good");
+//            Intent i = new Intent(SignInActivity.this, MainActivity.class);
+//            Bundle bundle = new Bundle();
+//            bundle.putString("user name", theUserName);
+//            i.putExtras(bundle);
+//            startActivity(i);
+//        } else {
+            // if not logged in, open SignInFragment to give user Login options
             Log.d("NO intent to main", "oh man");
             FragmentTransaction ft = getFragmentManager().beginTransaction();
             ft.add(R.id.frame_for_sign_in, new SignInFragment()).commit();
-        }
-
-//        FragmentTransaction ft = getFragmentManager().beginTransaction();
-//        ft.add(R.id.frame_for_sign_in, new SignInFragment()).commit();
+//        }
 
     }
 

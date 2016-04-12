@@ -4,10 +4,15 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Typeface;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import com.google.android.gms.auth.api.Auth;
@@ -21,6 +26,8 @@ import com.google.android.gms.common.api.OptionalPendingResult;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
 
+import java.util.List;
+
 /**
  * Created by Brendan on 3/28/2016.
  */
@@ -33,17 +40,103 @@ public class GoogleSignIn extends AppCompatActivity implements GoogleApiClient.O
     private String mDisplayName;
     public static final String LOGIN_STATE = "Login State";
     SharedPreferences mSharedPreferences;
+    public static Context appContext;
+    String usernameEdit;
+    String passwordEdit;
+    String firstNameEdit;
+    Context mContext;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+//        FacebookSdk.sdkInitialize(this.getApplicationContext());
         setContentView(R.layout.sign_in_activity);
+        appContext = this;
+
+        TextView appName = (TextView) findViewById(R.id.app_name);
+        Typeface typeface = Typeface.createFromAsset(getAssets(), "fonts/Arizonia-Regular.ttf");
+        appName.setTypeface(typeface);
+
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
+
+        mSharedPreferences = getSharedPreferences(LOGIN_STATE, Context.MODE_PRIVATE);
+
+        // retrieve login status (true = logged in, false = not logged in)
+        boolean isLoggedIn = mSharedPreferences.getBoolean("loggedin", false);
+
+        // retrieve name of user
+        String theUserName = mSharedPreferences.getString("name", "Name:");
+
+        Log.d("is Logged in?", String.valueOf(isLoggedIn));
+        Log.d("user name transfer", theUserName);
+
+        if (mSharedPreferences.getBoolean("loggedin", false)){
+
+            // if user is already logged in, open Main Activity and pass user name as a bundle
+            Log.d("intent to main", "good");
+            Intent i = new Intent(GoogleSignIn.this, MainActivity.class);
+//            Bundle bundle = new Bundle();
+//            bundle.putString("user name", theUserName);
+//            i.putExtras(bundle);
+            mSharedPreferences = this.getSharedPreferences(LOGIN_STATE, Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = mSharedPreferences.edit();
+            editor.putString("name", theUserName);
+            editor.putBoolean("loggedin", true);
+            editor.apply();
+            startActivity(i);
+        }
 
         mStatusTextView = (TextView) findViewById(R.id.status);
 
         findViewById(R.id.sign_in_button).setOnClickListener(this);
         findViewById(R.id.sign_out_button).setOnClickListener(this);
         findViewById(R.id.start_button).setOnClickListener(this);
+
+        // initialize views in case user opts to Sign Up without Google
+        final EditText usernameEditText = (EditText) findViewById(R.id.username);
+        final EditText passwordEditText = (EditText) findViewById(R.id.password);
+        final EditText firstNameEditText = (EditText) findViewById(R.id.first_name);
+        Button submitBtn = (Button) findViewById(R.id.submit);
+
+        submitBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                usernameEdit = usernameEditText.getText().toString();
+                Log.d("submit name", usernameEdit);
+                passwordEdit = passwordEditText.getText().toString();
+                Log.d("submit pword", passwordEdit);
+                firstNameEdit = firstNameEditText.getText().toString();
+                Log.d("submit first", firstNameEdit);
+                BeerHandler beerHandler = new BeerHandler(appContext);
+                boolean notTaken = false;
+                List<String> usernames = beerHandler.checkUsername(usernameEdit);
+                if (usernames != null) {
+                    for (String username : usernames) {
+                        if (!username.equals(usernameEdit)) {
+                            notTaken = true;
+                        }
+
+                    }
+                } else {
+                    notTaken = true;
+                }
+
+                if (usernameEdit.length() < 4){
+                    usernameEditText.setError("Please try a Username longer than 3 letters!");
+                } else if (passwordEdit.length() < 6){
+                    passwordEditText.setError("Please try a Password with at least 6 characters!");
+                } else if (firstNameEdit.length() < 2){
+                    firstNameEditText.setError("Please try a First Name of at least 2 letters!");
+                } else if (!notTaken) {
+                    usernameEditText.setError("Please try a different Username! This one is taken");
+                } else {
+                    Log.d("manual login", "woo");
+                    manualLogin();
+                }
+
+
+            }
+        });
 
         // Configure sign-in to request the user's ID, email address, and basic
         // profile. ID and basic profile are included in DEFAULT_SIGN_IN.
@@ -63,6 +156,17 @@ public class GoogleSignIn extends AppCompatActivity implements GoogleApiClient.O
         signInButton.setSize(SignInButton.SIZE_STANDARD);
         signInButton.setScopes(gso.getScopeArray());
 
+    }
+
+    private void manualLogin() {
+        mSharedPreferences = this.getSharedPreferences(LOGIN_STATE, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = mSharedPreferences.edit();
+        editor.putBoolean("loggedin", true);
+        editor.apply();
+        Intent i = new Intent(GoogleSignIn.this, MainActivity.class);
+        Log.d("user name edit", usernameEdit);
+        setPrefs("name", usernameEdit, this);
+        startActivity(i);
     }
 
     @Override
@@ -116,6 +220,7 @@ public class GoogleSignIn extends AppCompatActivity implements GoogleApiClient.O
             Log.d("account name", account.getDisplayName());
             mDisplayName = account.getDisplayName();
 
+            setPrefs("name", mDisplayName, this);
             mSharedPreferences = this.getSharedPreferences(LOGIN_STATE, Context.MODE_PRIVATE);
             SharedPreferences.Editor editor = mSharedPreferences.edit();
             editor.putString("name", account.getDisplayName());
@@ -134,6 +239,19 @@ public class GoogleSignIn extends AppCompatActivity implements GoogleApiClient.O
         }
     }
 
+    public static void setPrefs(String name, String mDisplayName, Context context) {
+        Log.d("Set prefs", "cool");
+        SharedPreferences myPrefs = PreferenceManager.getDefaultSharedPreferences(context);
+        SharedPreferences.Editor editor = myPrefs.edit();
+        editor.putString(name, mDisplayName);
+        editor.commit();
+    }
+
+    public static String getPrefs(String name, Context context){
+        Log.d("get prefs", "cool");
+        SharedPreferences myPrefs = PreferenceManager.getDefaultSharedPreferences(context);
+        return myPrefs.getString(name, "default");
+    }
 
 
     @Override

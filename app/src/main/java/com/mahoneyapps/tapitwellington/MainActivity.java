@@ -12,8 +12,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import com.facebook.FacebookSdk;
-import com.facebook.login.LoginManager;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 
@@ -50,8 +48,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         tabLayout.addTab(tabLayout.newTab().setIcon(R.drawable.ic_leaderboard));
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
 
-//        mUserName = getIntent().getExtras().getString("user name");
+//        mUserName = getIntent().getExtras().getString("name");
 //        Log.d("the user name MA", mUserName);
+
 
 //        mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 //        SharedPreferences.Editor editor = mSharedPreferences.edit();
@@ -84,6 +83,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             public void onTabSelected(TabLayout.Tab tab) {
 
                 TAB_POSITION = tab.getPosition();
+                // Open Fragment depending upon which tab in the tab layout is selected
                 switch (tab.getPosition()) {
                     case 0:
                         FragmentTransaction ft = getFragmentManager().beginTransaction();
@@ -91,18 +91,15 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                         break;
                     case 1:
                         FragmentTransaction ft1 = getFragmentManager().beginTransaction();
-                        ft1.replace(R.id.frame, new PubListFragment()).commit();
+                        ft1.replace(R.id.frame, new PubListFragment()).addToBackStack(null).commit();
                         break;
-                    // if the 2nd tab is selected, open the Map
-
                     case 2:
                         FragmentTransaction ft2 = getFragmentManager().beginTransaction();
-                        ft2.replace(R.id.frame, new BeerMap()).commit();
+                        ft2.replace(R.id.frame, new BeerMap()).addToBackStack(null).commit();
                         break;
-
                     case 3:
                         FragmentTransaction ft3 = getFragmentManager().beginTransaction();
-                        ft3.replace(R.id.frame, new Leaderboard()).commit();
+                        ft3.replace(R.id.frame, new Leaderboard()).addToBackStack(null).commit();
                         break;
                 }
 
@@ -124,6 +121,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     @Override
     public void onBackPressed() {
         Log.d("start onBackPressed: " + getFragmentManager().getBackStackEntryCount(), "woo");
+        // Pop the backstack if there are entries on the backstack
         if (getFragmentManager().getBackStackEntryCount() != 0){
             getFragmentManager().popBackStack();
         } else {
@@ -147,30 +145,27 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        if (id == R.id.home){
-            getFragmentManager().popBackStack();
-
-            return true;
-        }
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            Intent openAbout = new Intent(MainActivity.this, About.class);
+            startActivity(openAbout);
             return true;
         }
-        if (id == R.id.sign_out){
-            FacebookSdk.sdkInitialize(getApplicationContext());
-            LoginManager.getInstance().logOut();
-            mSharedPreferences = getSharedPreferences(LOGIN_STATE, Context.MODE_PRIVATE);
-            SharedPreferences.Editor editor = mSharedPreferences.edit();
-            editor.clear();
-            editor.apply();
-            Intent intent = new Intent(this, SignInChooser.class);
-            startActivity(intent);
-            finish();
-        }
-        if (id == R.id.sign_out_google){
-            GoogleSignIn google = new GoogleSignIn();
-            google.signOut();
-        }
+//        if (id == R.id.sign_out){
+//            FacebookSdk.sdkInitialize(getApplicationContext());
+//            LoginManager.getInstance().logOut();
+//            mSharedPreferences = getSharedPreferences(LOGIN_STATE, Context.MODE_PRIVATE);
+//            SharedPreferences.Editor editor = mSharedPreferences.edit();
+//            editor.clear();
+//            editor.apply();
+//            Intent intent = new Intent(this, SignInChooser.class);
+//            startActivity(intent);
+//            finish();
+//        }
+//        if (id == R.id.sign_out_google){
+//            GoogleSignIn google = new GoogleSignIn();
+//            google.signOut();
+//        }
 
         return super.onOptionsItemSelected(item);
     }

@@ -1,12 +1,16 @@
 package com.mahoneyapps.tapitwellington;
 
+/**
+ * Created by Brendan on 4/4/2016.
+ */
+
+import android.app.Fragment;
+import android.app.FragmentTransaction;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.app.Fragment;
 import android.support.v4.app.FragmentActivity;
-import android.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -30,67 +34,88 @@ import java.util.ArrayList;
 /**
  * Created by Brendan on 3/29/2016.
  */
-public class HopGarden extends Fragment {
+public class NewFork extends Fragment {
 
     ListView mListView;
+    String mBrewery = "Fork and Brewer";
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.beer_list_view, container, false);
 
-
         AppCompatActivity activity = ((AppCompatActivity) getActivity());
         TextView toolbar = (TextView)activity.findViewById(R.id.toolbar_title);
-        toolbar.setText("Hop Garden Tap List");
+        // change toolbar title
+        toolbar.setText("Fork and Brewer");
 
         mListView = (ListView) view.findViewById(R.id.list_view);
 
+        // prevents views from overlaying one another
         if (container != null) {
             container.removeAllViews();
         }
 
-        new HopGardenTask(getActivity()).execute();
+        // Start Async task
+        new ForkBrewerTask(getActivity()).execute();
 
         return view;
-
     }
 
-    private class HopGardenTask extends AsyncTask<Void, Void, ArrayList<String>> {
+    private class ForkBrewerTask extends AsyncTask<Void, Void, ArrayList<String>> {
         Context mContext;
-        String url = "http://www.thehopgarden.co.nz/the-taps.html";
 
-        public HopGardenTask(Context context){
+        // Tap List URL to connect to in background
+        String url = "http://forkandbrewer.co.nz/brew/brewpage#5";
+
+        public ForkBrewerTask(Context context) {
             mContext = context;
         }
 
+
         @Override
         protected ArrayList<String> doInBackground(Void... params) {
-            ArrayList<String> arrayListOfBeers = new ArrayList<>();
+
+            ArrayList<String> beers = new ArrayList<>();
             String beerName = "";
+            ArrayList<String> subListBeers = new ArrayList<>();
+            int indexOfHandPulls;
 
             try {
                 Document doc = Jsoup.connect(url).get();
-                Elements elements = doc.select(":contains(Renaissance)");
-                Log.d("hop garden", String.valueOf(elements));
-                for (Element HopGardenBeer : elements){
-                    beerName = HopGardenBeer.text();
-                    Log.d("hop garden text", beerName);
-                    arrayListOfBeers.add(beerName);
-                }
+                Elements elements = doc.select("td > span");
 
-            } catch (IOException e) {
+                // Get text of beer name and add to ArrayList
+                for (Element forkBeer : elements) {
+                    beerName = forkBeer.text();
+                    Log.d("fork beer name", beerName);
+                    beers.add(beerName);
+
+                    // excludes the section of the menu listing beers starting at "ON THE HANDPULL", thus
+                    // only including tap beers
+                    if (beerName.equals("ON THE HANDPULL")){
+                        indexOfHandPulls = beers.indexOf("ON THE HANDPULL");
+                        Log.d("hand pull", String.valueOf(indexOfHandPulls));
+                        subListBeers = new ArrayList<>(beers.subList(1, indexOfHandPulls));
+                    }
+
+
+                }
+            }
+            catch (IOException e){
                 e.printStackTrace();
             }
 
-            return arrayListOfBeers;
+
+            return subListBeers;
         }
 
         @Override
         protected void onPostExecute(ArrayList<String> result) {
 
-
             ArrayAdapter adapter = new ArrayAdapter<String>(mContext, R.layout.pub_item, R.id.pub_text_view, result);
+
+            // Animation adapter to swing in from left
             SwingLeftInAnimationAdapter swingAdapter = new SwingLeftInAnimationAdapter(adapter);
             swingAdapter.setAbsListView(mListView);
             mListView.setAdapter(swingAdapter);
@@ -98,23 +123,26 @@ public class HopGarden extends Fragment {
             mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    // Get position of item clicked, pass that as beer name
                     String spotInList = mListView.getItemAtPosition(position).toString();
                     Log.d("listview click test", spotInList);
 
+                    // Add bundle to Selected Beer View fragment, passing the beer name and brewery/pub name
                     FragmentTransaction ft = ((FragmentActivity) mContext).getFragmentManager().beginTransaction();
                     Bundle args = new Bundle();
                     args.putString("beer", spotInList);
+                    args.putString("brewery", mBrewery);
                     SelectedBeerView sbv = new SelectedBeerView();
                     sbv.setArguments(args);
 
+                    // Add transaction to backstack for proper back navigation
                     ft.replace(R.id.frame, sbv).addToBackStack("add sbv").commit();
 
                 }
             });
 
-
         }
     }
-
 }
+
 

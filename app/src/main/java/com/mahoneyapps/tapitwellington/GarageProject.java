@@ -1,7 +1,6 @@
 package com.mahoneyapps.tapitwellington;
 
 import android.app.Fragment;
-import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Context;
 import android.os.AsyncTask;
@@ -44,44 +43,27 @@ public class GarageProject extends Fragment {
 
         AppCompatActivity activity = ((AppCompatActivity) getActivity());
         TextView toolbar = (TextView)activity.findViewById(R.id.toolbar_title);
-        toolbar.setText("Garage Project Tap List");
+        // Set toolbar text
+        toolbar.setText("Garage Project");
 
         mListView = (ListView) view.findViewById(R.id.list_view);
 
+        // Prevents views from overlaying one another
         if (container != null) {
             container.removeAllViews();
         }
 
+        // Start Async task
         new GarageProjectTask(getActivity()).execute();
 
         return view;
     }
-//
-//    @Override
-//    public void onResume() {
-//        super.onResume();
-//
-//        getView().setFocusableInTouchMode(true);
-//        getView().requestFocus();
-//        getView().setOnKeyListener(new View.OnKeyListener() {
-//            @Override
-//            public boolean onKey(View v, int keyCode, KeyEvent event) {
-//                if (event.getAction() == KeyEvent.ACTION_UP && keyCode == KeyEvent.KEYCODE_BACK){
-//                    getActivity().getSupportFragmentManager().popBackStack();
-//                    return true;
-//                }
-//                return false;
-//            }
-//        });
-//    }
 
 
     private class GarageProjectTask extends AsyncTask<Void, Void, ArrayList<String>> {
         Context mContext;
-//        LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(LAYOUT_INFLATER_SERVICE);
-//        View v = inflater.inflate(R.layout.beer_list_view, null);
 
-
+        // URL to connect to
         String url = "http://garageproject.co.nz/pages/taproom";
 
         public GarageProjectTask(Context context) {
@@ -97,6 +79,7 @@ public class GarageProject extends Fragment {
             try {
                 Document doc = Jsoup.connect(url).get();
                 Elements element = doc.select("a[class=link light]");
+                // for each Beer returned, get text and add it to Array List
                 for (Element item : element){
                     beerName = item.text();
 
@@ -114,6 +97,7 @@ public class GarageProject extends Fragment {
         protected void onPostExecute(ArrayList<String> result) {
 
             ArrayAdapter adapter = new ArrayAdapter<String>(mContext, R.layout.pub_item, R.id.pub_text_view, result);
+            // Add animation to adapter, swing in from left
             SwingLeftInAnimationAdapter swingAdapter = new SwingLeftInAnimationAdapter(adapter);
             swingAdapter.setAbsListView(mListView);
             mListView.setAdapter(swingAdapter);
@@ -121,13 +105,16 @@ public class GarageProject extends Fragment {
             mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    // Get position of item clicked, pass that as beer name
                     String spotInList = mListView.getItemAtPosition(position).toString();
                     Log.d("listview click test", spotInList);
 
-                    FragmentManager fm = getFragmentManager();
-                    for (int entry = 0; entry < fm.getBackStackEntryCount(); entry++){
-                        Log.i("Fragment found", fm.getBackStackEntryAt(entry).toString());
-                    }
+//                    FragmentManager fm = getFragmentManager();
+//                    for (int entry = 0; entry < fm.getBackStackEntryCount(); entry++){
+//                        Log.i("Fragment found", fm.getBackStackEntryAt(entry).toString());
+//                    }
+
+                    // Add bundle to Selected Beer View fragment, passing the beer name and brewery/pub name
                     FragmentTransaction ft = ((FragmentActivity)mContext).getFragmentManager().beginTransaction();
                     Bundle args = new Bundle();
                     args.putString("beer", spotInList);
@@ -135,11 +122,8 @@ public class GarageProject extends Fragment {
                     SelectedBeerView sbv = new SelectedBeerView();
                     sbv.setArguments(args);
 
-
+                    // Add transaction to backstack for proper back navigation
                     ft.replace(R.id.frame, sbv).addToBackStack("add sbv").commit();
-
-//                    UntappdAPICall apiCall = new UntappdAPICall();
-//                    apiCall.searchForBeer(spotInList);
 
                 }
             });

@@ -1,7 +1,6 @@
 package com.mahoneyapps.tapitwellington;
 
 import android.app.Fragment;
-import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Context;
 import android.os.AsyncTask;
@@ -40,17 +39,19 @@ public class Malthouse extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.beer_list_view, container, false);
 
-
         AppCompatActivity activity = ((AppCompatActivity) getActivity());
         TextView toolbar = (TextView)activity.findViewById(R.id.toolbar_title);
-        toolbar.setText("Malthouse Tap List");
+        // change toolbar title
+        toolbar.setText("Malthouse");
 
         mListView = (ListView) view.findViewById(R.id.list_view);
 
+        // prevents views from overlaying one another
         if (container != null) {
             container.removeAllViews();
         }
 
+        // Start Async task
         new MalthouseTask(getActivity()).execute();
 
         return view;
@@ -59,6 +60,8 @@ public class Malthouse extends Fragment {
 
     private class MalthouseTask extends AsyncTask<Void, Void, ArrayList<String>> {
         Context mContext;
+
+        // URL to connect to
         String url = "http://themalthouse.co.nz/on-tap";
 
         public MalthouseTask(Context context) {
@@ -76,9 +79,14 @@ public class Malthouse extends Fragment {
                 for (Element malthouseBeer : elements) {
                     beerName = malthouseBeer.text();
                     Log.d("malthouse beer name", beerName);
+
+                    // Create a substring to only grab the Beer name from the element return
+                    // Additional info after comma, not needed
                     int indexOfComma = beerName.indexOf(",");
                     String finalBeerName = beerName.substring(0, indexOfComma);
                     Log.d("malthouse beer name", finalBeerName);
+
+                    // Add parsed beer name to Array List
                     arrayListOfBeers.add(finalBeerName);
                 }
 
@@ -94,6 +102,7 @@ public class Malthouse extends Fragment {
 
 
             ArrayAdapter adapter = new ArrayAdapter<String>(mContext, R.layout.pub_item, R.id.pub_text_view, result);
+            // Animation adapter to swing in from left
             SwingLeftInAnimationAdapter swingAdapter = new SwingLeftInAnimationAdapter(adapter);
             swingAdapter.setAbsListView(mListView);
             mListView.setAdapter(swingAdapter);
@@ -101,13 +110,11 @@ public class Malthouse extends Fragment {
             mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    // Get position of item clicked, pass that as beer name
                     String spotInList = mListView.getItemAtPosition(position).toString();
                     Log.d("listview click test", spotInList);
 
-                    FragmentManager fm = getFragmentManager();
-                    for (int entry = 0; entry < fm.getBackStackEntryCount(); entry++){
-                        Log.i("Fragment found", fm.getBackStackEntryAt(entry).toString());
-                    }
+                    // Add bundle to Selected Beer View fragment, passing the beer name and brewery/pub name
                     FragmentTransaction ft = getFragmentManager().beginTransaction();
                     Bundle args = new Bundle();
                     args.putString("beer", spotInList);
@@ -115,7 +122,7 @@ public class Malthouse extends Fragment {
                     SelectedBeerView sbv = new SelectedBeerView();
                     sbv.setArguments(args);
 
-
+                    // Add transaction to backstack for proper back navigation
                     ft.replace(R.id.frame, sbv).addToBackStack("add sbv").commit();
 
                 }

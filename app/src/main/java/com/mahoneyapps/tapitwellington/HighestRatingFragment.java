@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,9 +39,10 @@ public class HighestRatingFragment extends Fragment {
 
         AppCompatActivity activity = ((AppCompatActivity) getActivity());
         TextView toolbar = (TextView) activity.findViewById(R.id.toolbar_title);
-        toolbar.setText("Highest Rating Beers");
-//        activity.getSupportActionBar().setTitle("Recent Beers");
+//         Set toolbar text
+        toolbar.setText("Highest Rated");
 
+        // prevents views from overlaying one another
         if (container != null) {
             container.removeAllViews();
         }
@@ -51,9 +53,11 @@ public class HighestRatingFragment extends Fragment {
         mLayoutManager = new LinearLayoutManager(getActivity());
         mRecyclerView.setLayoutManager(mLayoutManager);
 
+        // Pass Beer List and Rating List to adapter
         mAdapter = new MostBeersAdapter(mBeerList, mRatingList);
         mRecyclerView.setAdapter(mAdapter);
 
+        // Adds an item divider for the Recycler View
         mRecyclerView.addItemDecoration(new HorizontalDividerItemDecoration.Builder(getActivity()).
                 color(Color.rgb(153, 50, 204)).margin(40).build());
 
@@ -70,16 +74,32 @@ public class HighestRatingFragment extends Fragment {
 
         mBeerHandler = new BeerHandler(getActivity());
         List<String> beersToAdd = new ArrayList<>();
+        // Get ArrayList of Beers sorted by highest rating
         beersToAdd = mBeerHandler.getBeerLeadersByRating();
 
-        mBeerList.clear();
+        if (beersToAdd == null){
+            Toast.makeText(getActivity(), "Leaderboard is blank!", Toast.LENGTH_SHORT).show();
+        } else {
 
-        for (String beer : beersToAdd){
-            beerName.setText(beer);
-            mBeerList.add(beer);
+            // clear the BeerList, previously empty
+            mBeerList.clear();
+
+            // For each beer in the ArrayList, set the TextView equal to the beer and then add it to the recently cleared ArrayList
+            for (String beer : beersToAdd) {
+                if (beer.length() > 25){
+                    beer = beer.substring(0, 30);
+                }
+                beerName.setText(beer);
+                mBeerList.add(beer);
+                // limit list to 10 entries
+                if (mBeerList.size() >= 10){
+                    return;
+                }
+            }
+
+            // Notify our adapter to update with our newly added beers
+            mAdapter.notifyDataSetChanged();
         }
-
-        mAdapter.notifyDataSetChanged();
     }
 
     private class MostBeersAdapter extends RecyclerView.Adapter<MostBeersAdapter.MostBeersHolder> {
@@ -102,18 +122,30 @@ public class HighestRatingFragment extends Fragment {
 
         @Override
         public void onBindViewHolder(MostBeersHolder holder, int position) {
+            // Set text view equal to the beer name
             holder.beerName.setText(String.valueOf(mBeerList.get(position)));
 
             String beer = String.valueOf(mBeerList.get(position));
             BeerHandler beerHandler = new BeerHandler(getActivity());
+
+            // Pass the beer name as an argument and return its overall average rating
             String beerRating = beerHandler.getTotalAvgRating(beer);
+
+            // Set the text view equal to the beer rating
             holder.count.setText(String.valueOf(beerRating));
+
+            // Setting the values of the list (i.e. 1. 2. 3.)
             holder.position.setText(String.valueOf(position + 1) + ".");
+
+            if (position % 2 == 0){
+                holder.relativeLayout.setBackgroundResource(R.drawable.shape_dark);
+            }
         }
 
         @Override
         public int getItemCount() {
             Log.d("size", String.valueOf(mBeerList.size()));
+            // Return size of the beer list
             return mBeerList.size();
         }
 
@@ -123,13 +155,16 @@ public class HighestRatingFragment extends Fragment {
             TextView count;
             TextView position;
             Context mContext;
+            View relativeLayout;
 
             public MostBeersHolder(View itemView, Context context) {
                 super(itemView);
                 mContext = context;
+                // Initialize some text views in our Leaderboard Row (number in list, beer name, rating)
                 beerName = (TextView) itemView.findViewById(R.id.leaderboard_beer_name);
                 count = (TextView) itemView.findViewById(R.id.leaderboard_count);
                 position = (TextView) itemView.findViewById(R.id.leaderboard_position);
+                relativeLayout = (View) itemView.findViewById(R.id.relative_layout_leaderboard);
             }
         }
 

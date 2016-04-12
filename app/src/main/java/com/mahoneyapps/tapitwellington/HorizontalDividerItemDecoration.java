@@ -15,6 +15,7 @@ import com.yqritc.recyclerviewflexibledivider.FlexibleDividerDecoration;
  */
 public class HorizontalDividerItemDecoration extends FlexibleDividerDecoration {
 
+    // Provide horizontal divider options (color, margin, etc.) for Recycler List Views
     private MarginProvider mMarginProvider;
 
     protected HorizontalDividerItemDecoration(Builder builder) {

@@ -29,12 +29,15 @@ public class SelectedBeerView extends Fragment {
     TextView mUserRating;
     SharedPreferences mSharedPreferences;
 
+    // pass user name from user Login to SelectedBeerView
     public static SelectedBeerView newInstance(Bundle b){
         SelectedBeerView sbv = new SelectedBeerView();
         sbv.setArguments(b);
         mUserName = String.valueOf(b);
         int start = (mUserName.indexOf("=")) + 1;
         int end = mUserName.indexOf("}");
+
+        // retrieves just the user name from formatting
         mUserName = mUserName.substring(start, end);
         Log.d("the user name newinst", mUserName);
 
@@ -46,13 +49,18 @@ public class SelectedBeerView extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.selected_beer_view, container, false);
 
+        GoogleSignIn newGSI = new GoogleSignIn();
+        mUserName = newGSI.getPrefs("name", GoogleSignIn.appContext);
+
         Log.d("testing username", "hmm");
         TextView tv = (TextView) v.findViewById(R.id.text_beer_selected);
         TextView tvBrewery = (TextView) v.findViewById(R.id.brewery);
 
+        // get beer name passed from Brewery/Pub fragment
         mBeerName = getArguments().getString("beer");
         tv.setText(mBeerName);
 
+        // get brewery/pub name passed from Brewery/Pub fragment
         mBrewery = getArguments().getString("brewery");
         Log.d("brewery", mBrewery);
 //        tvBrewery.setText(mBrewery);
@@ -60,6 +68,7 @@ public class SelectedBeerView extends Fragment {
 
         Log.d("the user name in SBV", mUserName);
 
+        // initialized text views for Beer stats
         mTotalCheckIn = (TextView) v.findViewById(R.id.number_total_check_in);
         mTotalRating = (TextView) v.findViewById(R.id.number_total_rating);
         mUserCheckIn = (TextView) v.findViewById(R.id.number_user_check_in);
@@ -72,6 +81,7 @@ public class SelectedBeerView extends Fragment {
 //        getRatingText = (TextView) v.findViewById(R.id.show_rating_text);
 //        getNumOfTimesHad = (TextView) v.findViewById(R.id.show_number_of_times_had);
 
+        // Remove any container views to prevent fragment overlap
         if (container != null) {
             container.removeAllViews();
         }
@@ -91,8 +101,9 @@ public class SelectedBeerView extends Fragment {
             @Override
             public void onRatingChanged(RatingBar ratingBar, float rating, boolean fromUser) {
                 Log.d("new rating", String.valueOf(rating));
+                // store rating that user gives beer
                 mRating = Math.round(rating);
-//                Toast.makeText(getActivity(), "You rated this beer " + rating + " stars", Toast.LENGTH_SHORT).show();
+//
             }
         });
 
@@ -102,9 +113,14 @@ public class SelectedBeerView extends Fragment {
 
                 BeerHandler handler = new BeerHandler(getActivity());
                 BeerCatalogue catalogue = new BeerCatalogue(1, mBeerName, mRating, mUserName, mBrewery);
+
+                // on button click, submit a new rating
                 handler.addRating(catalogue);
 
+                // reflect current beer stats once rating is submitted
                 showRating(catalogue);
+
+                // hope you enjoyed - toast
                 Toast.makeText(getActivity(), "Thanks! Hope you enjoyed " + mBeerName, Toast.LENGTH_SHORT).show();
             }
         });
@@ -113,18 +129,17 @@ public class SelectedBeerView extends Fragment {
     }
 
     private void showRating(BeerCatalogue catalogue) {
-        int rating = catalogue.getRating();
-//        getRatingText.setText("You have rated this beer " + rating + " stars! Thanks " + mUserName);
 
         BeerHandler handler = new BeerHandler(getActivity());
+
+        // getting beer stats - total + user count, total + user avergae rating
         int count = handler.getUserCount(mBeerName, mUserName);
         int totalCount = handler.getTotalCount(mBeerName);
         String totalAvgRating = handler.getTotalAvgRating(mBeerName);
         String userAvgRating = handler.getUserAvgRating(mBeerName, mUserName);
-//        getNumOfTimesHad.setText("This beer has an average rating of " + totalAvgRating + "\n" +
-//                "You have drank this beer " + count + " times \n" +
-//                "Your average rating is " + userAvgRating);
 
+
+        // setting text views to reflect changes in beer stats
         mTotalCheckIn.setText(" " + totalCount);
         if (Double.parseDouble(totalAvgRating) > 0.0){
             mTotalRating.setText(" " + totalAvgRating);
