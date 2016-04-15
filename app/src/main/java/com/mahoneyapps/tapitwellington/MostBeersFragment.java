@@ -8,7 +8,6 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -92,7 +91,7 @@ public class MostBeersFragment extends Fragment {
         // For each beer in the ArrayList, set the TextView equal to the beer and then add it to the recently cleared ArrayList
         for (String beer : beersToAdd){
             if (beer.length() > 25){
-                beer = beer.substring(0, 30);
+                beer = beer.substring(0, beer.length());
             }
             beerName.setText(beer);
             mBeerList.add(beer);
@@ -116,7 +115,7 @@ public class MostBeersFragment extends Fragment {
 
         @Override
         public MostBeersHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            Log.d("on create view holder", "okay");
+
             LayoutInflater inflater = LayoutInflater.from(parent.getContext());
             View view = inflater.inflate(R.layout.leaderboard_row, parent, false);
             view.setOnClickListener(mClickListener);
@@ -148,7 +147,7 @@ public class MostBeersFragment extends Fragment {
 
         @Override
         public int getItemCount() {
-            Log.d("size", String.valueOf(mBeerList.size()));
+
             // Return size of the beer list
             return mBeerList.size();
         }

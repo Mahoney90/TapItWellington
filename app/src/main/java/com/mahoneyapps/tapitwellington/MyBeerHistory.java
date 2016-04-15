@@ -11,7 +11,6 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -53,7 +52,6 @@ public class MyBeerHistory extends Fragment {
         int start = (mUsername.indexOf("=")) + 1;
         int end = mUsername.indexOf("}");
         mUsername = mUsername.substring(start, end);
-        Log.d("the user name mbh", mUsername);
 
         return mbh;
     }
@@ -62,7 +60,6 @@ public class MyBeerHistory extends Fragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        Log.d("on attach", "attaching");
         mContext = context;
     }
 
@@ -77,7 +74,7 @@ public class MyBeerHistory extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.d("on create view", "on create");
+
         GoogleSignIn newGSI = new GoogleSignIn();
         mUsername = newGSI.getPrefs("name", GoogleSignIn.appContext);
 
@@ -117,7 +114,6 @@ public class MyBeerHistory extends Fragment {
     }
 
     private void getBeerName() {
-        Log.d("get beer name", "getting name and ratings");
 
         TextView tvName;
         TextView tvBrewery;
@@ -129,15 +125,14 @@ public class MyBeerHistory extends Fragment {
         mBeerHandler = new BeerHandler(getActivity());
 
         List<String> beersToAdd = new ArrayList<>();
-        Log.d("user beer history", beersToAdd.toString());
-        Log.d("user history user name", mUsername);
+
         if (mBeerHandler.getUserBeerHistory(mUsername) == null ){
             // user has not rated any beers
-            Log.d("less than 1", "returned null");
+
             Toast.makeText(mContext, "DRINK MORE!", Toast.LENGTH_LONG).show();
         } else {
             // user has rated beers
-            Log.d("1 or more","didn't return null");
+
             // get the beer history for the user
             beersToAdd = mBeerHandler.getUserBeerHistory(mUsername);
         }
@@ -151,10 +146,9 @@ public class MyBeerHistory extends Fragment {
             // add the beer to the Beer List array
             tvName.setText(beer);
             mBeerList.add(beer);
-            Log.d("beer list size", String.valueOf(mBeerList.size()));
+
             // Pass the beer as an argument and return the brewery
             mBrewery = mBeerHandler.getBrewery(beer);
-            Log.d("brewery", mBrewery);
         }
 
         LinkedHashSet<String> userSet = new LinkedHashSet<>();
@@ -162,13 +156,10 @@ public class MyBeerHistory extends Fragment {
 
         // Clear beer list before adding Hashset
         mBeerList.clear();
-        Log.d("beer list size2", String.valueOf(mBeerList.size()));
         mBeerList.addAll(userSet);
 
         // Most recent check ins are at top
         Collections.reverse(mBeerList);
-        Log.d("beer list size3", String.valueOf(mBeerList.size()));
-        Log.d("size of linked set", String.valueOf(userSet.size()));
 
         // Notify adapter of data changes
         mAdapter.notifyDataSetChanged();
@@ -183,7 +174,7 @@ public class MyBeerHistory extends Fragment {
     private class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.BeerHistoryHolder>{
 
         public HistoryAdapter(List<String> beerList, List<Integer> ratingList){
-            Log.d("history adapter", "adapter");
+
             mBeerList = beerList;
             mRatingList = ratingList;
         }
@@ -191,7 +182,7 @@ public class MyBeerHistory extends Fragment {
 
         @Override
         public BeerHistoryHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            Log.d("on create view holder", "okay");
+
             LayoutInflater inflater = LayoutInflater.from(parent.getContext());
             View view = inflater.inflate(R.layout.my_beer_history, parent, false);
             view.setOnClickListener(mClickListener);
@@ -202,7 +193,6 @@ public class MyBeerHistory extends Fragment {
 
         @Override
         public void onBindViewHolder(BeerHistoryHolder holder, int position) {
-            Log.d("on bind view holder", "okay");
 
             // Set text view equal to the beer name
             holder.tvName.setText(String.valueOf(mBeerList.get(position)));
@@ -238,7 +228,7 @@ public class MyBeerHistory extends Fragment {
 
         @Override
         public int getItemCount() {
-            Log.d("size", String.valueOf(mBeerList.size()));
+
             // return size of beer list
             return mBeerList.size();
         }
@@ -255,7 +245,7 @@ public class MyBeerHistory extends Fragment {
 
             public BeerHistoryHolder(View itemView, Context context){
                 super(itemView);
-                Log.d("beer history holder", "holder");
+
                 mContext = context;
                 tvName = (TextView) itemView.findViewById(R.id.beer_name);
                 tvName.setOnClickListener(this);
@@ -274,7 +264,7 @@ public class MyBeerHistory extends Fragment {
 
     @Override
     public void onResume() {
-        Log.d("on resume", "resume");
+
         super.onResume();
         mBeerList = new ArrayList<>();
         mRatingList = new ArrayList<>();
@@ -282,17 +272,7 @@ public class MyBeerHistory extends Fragment {
 
         getBeerName();
     }
-//
-//    public void makeToast(){
-////            LayoutInflater inflater = LayoutInflater.from(mContext);
-////
-////            View view = inflater.inflate(R.layout.my_beer_history, null);
-////            TextView textview = (TextView) view.findViewById(R.id.beer_name);
-////            textview.setText("Drink!!!");
-//
-//        Log.d("calling make toast", "toast");
-//        Toast.makeText(mContext, "Start drinking " + mUsername + "!", Toast.LENGTH_LONG).show();
-//    }
+
 
 }
 

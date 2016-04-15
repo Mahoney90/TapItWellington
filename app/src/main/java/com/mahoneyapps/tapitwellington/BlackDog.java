@@ -6,13 +6,13 @@ package com.mahoneyapps.tapitwellington;
 
 import android.app.Fragment;
 import android.app.FragmentTransaction;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -65,12 +65,23 @@ public class BlackDog extends Fragment {
 
     private class BlackDogTask extends AsyncTask<Void, Void, ArrayList<String>> {
         Context mContext;
+        ProgressDialog progress;
 
         // Tap List URL to connect to in background
         String url = "http://blackdogbrewery.co.nz/the-beers/";
 
         public BlackDogTask(Context context) {
             mContext = context;
+        }
+
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            progress = new ProgressDialog(getActivity());
+            progress.setCancelable(false);
+            progress.setMessage("Getting tap list..");
+            progress.show();
         }
 
         @Override
@@ -96,8 +107,10 @@ public class BlackDog extends Fragment {
             return arr_beerName;
         }
 
+
         @Override
         protected void onPostExecute(ArrayList<String> result) {
+            progress.dismiss();
 
             ArrayAdapter adapter = new ArrayAdapter<String>(mContext, R.layout.pub_item, R.id.pub_text_view, result);
             // Animation adapter to swing in from left
@@ -110,7 +123,6 @@ public class BlackDog extends Fragment {
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                     // Get position of item clicked, pass that as beer name
                     String spotInList = mListView.getItemAtPosition(position).toString();
-                    Log.d("listview click test", spotInList);
 
                     // Add bundle to Selected Beer View fragment, passing the beer name and brewery/pub name
                     FragmentTransaction ft = ((FragmentActivity)mContext).getFragmentManager().beginTransaction();

@@ -11,7 +11,6 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -91,8 +90,6 @@ public class PubListFragment extends Fragment {
             mPubsList.add(index, p);
         }
 
-        Log.v("Test", String.valueOf(mPubsList.size()));
-        Log.v("Testing", String.valueOf(mPubsList));
 
         // notify the adapter about data changes
         mAdapter.notifyDataSetChanged();
@@ -110,7 +107,6 @@ public class PubListFragment extends Fragment {
             View view = inflater.inflate(R.layout.pub_item, parent, false);
             view.setOnClickListener(mItemClickListener);
 
-            Log.d("context2", String.valueOf(mContext));
             PubHolder pubHolder = new PubHolder(view, mContext);
             return pubHolder;
         }
@@ -141,7 +137,7 @@ public class PubListFragment extends Fragment {
             public PubHolder(View itemView, Context context){
                 super(itemView);
                 mContext = context;
-                Log.d("context3", String.valueOf(mContext));
+
                 pubTextView = (TextView) itemView.findViewById(R.id.pub_text_view);
                 pubTextView.setOnClickListener(this);
                 relativeLayout = (View) itemView.findViewById(R.id.relative_layout_pub);
@@ -151,7 +147,6 @@ public class PubListFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 int position = getAdapterPosition();
-                Log.d("position", String.valueOf(position));
 
                 openTapList(position);
             }

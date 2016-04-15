@@ -2,12 +2,12 @@ package com.mahoneyapps.tapitwellington;
 
 import android.app.Fragment;
 import android.app.FragmentTransaction;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -60,12 +60,22 @@ public class Malthouse extends Fragment {
 
     private class MalthouseTask extends AsyncTask<Void, Void, ArrayList<String>> {
         Context mContext;
+        ProgressDialog progress = new ProgressDialog(getActivity());
 
         // URL to connect to
         String url = "http://themalthouse.co.nz/on-tap";
 
         public MalthouseTask(Context context) {
             mContext = context;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            progress = new ProgressDialog(getActivity());
+            progress.setCancelable(false);
+            progress.setMessage("Getting tap list..");
+            progress.show();
         }
 
         @Override
@@ -78,13 +88,11 @@ public class Malthouse extends Fragment {
                 Elements elements = doc.select("td");
                 for (Element malthouseBeer : elements) {
                     beerName = malthouseBeer.text();
-                    Log.d("malthouse beer name", beerName);
 
                     // Create a substring to only grab the Beer name from the element return
                     // Additional info after comma, not needed
                     int indexOfComma = beerName.indexOf(",");
                     String finalBeerName = beerName.substring(0, indexOfComma);
-                    Log.d("malthouse beer name", finalBeerName);
 
                     // Add parsed beer name to Array List
                     arrayListOfBeers.add(finalBeerName);
@@ -99,7 +107,7 @@ public class Malthouse extends Fragment {
 
         @Override
         protected void onPostExecute(ArrayList<String> result) {
-
+            progress.dismiss();
 
             ArrayAdapter adapter = new ArrayAdapter<String>(mContext, R.layout.pub_item, R.id.pub_text_view, result);
             // Animation adapter to swing in from left
@@ -112,7 +120,6 @@ public class Malthouse extends Fragment {
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                     // Get position of item clicked, pass that as beer name
                     String spotInList = mListView.getItemAtPosition(position).toString();
-                    Log.d("listview click test", spotInList);
 
                     // Add bundle to Selected Beer View fragment, passing the beer name and brewery/pub name
                     FragmentTransaction ft = getFragmentManager().beginTransaction();

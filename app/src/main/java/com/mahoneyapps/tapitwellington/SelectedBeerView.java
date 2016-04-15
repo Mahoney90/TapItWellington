@@ -4,7 +4,6 @@ import android.app.Fragment;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -39,7 +38,6 @@ public class SelectedBeerView extends Fragment {
 
         // retrieves just the user name from formatting
         mUserName = mUserName.substring(start, end);
-        Log.d("the user name newinst", mUserName);
 
         return sbv;
     }
@@ -52,7 +50,6 @@ public class SelectedBeerView extends Fragment {
         GoogleSignIn newGSI = new GoogleSignIn();
         mUserName = newGSI.getPrefs("name", GoogleSignIn.appContext);
 
-        Log.d("testing username", "hmm");
         TextView tv = (TextView) v.findViewById(R.id.text_beer_selected);
         TextView tvBrewery = (TextView) v.findViewById(R.id.brewery);
 
@@ -62,11 +59,7 @@ public class SelectedBeerView extends Fragment {
 
         // get brewery/pub name passed from Brewery/Pub fragment
         mBrewery = getArguments().getString("brewery");
-        Log.d("brewery", mBrewery);
-//        tvBrewery.setText(mBrewery);
 
-
-        Log.d("the user name in SBV", mUserName);
 
         // initialized text views for Beer stats
         mTotalCheckIn = (TextView) v.findViewById(R.id.number_total_check_in);
@@ -100,10 +93,10 @@ public class SelectedBeerView extends Fragment {
         rateBar.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener() {
             @Override
             public void onRatingChanged(RatingBar ratingBar, float rating, boolean fromUser) {
-                Log.d("new rating", String.valueOf(rating));
+
                 // store rating that user gives beer
                 mRating = Math.round(rating);
-//
+
             }
         });
 

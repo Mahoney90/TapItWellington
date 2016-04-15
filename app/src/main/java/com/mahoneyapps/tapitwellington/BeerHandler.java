@@ -74,7 +74,6 @@ public class BeerHandler {
 
         while (cursor.moveToNext()){
             beerName = cursor.getString(columnIndex);
-            Log.d("beer name while loop", beerName);
             userHistory.add(beerName);
         }
         return userHistory;
@@ -155,9 +154,7 @@ public class BeerHandler {
         int columnIndex = cursor1.getColumnIndex("Sum(rating)");
         cursor1.moveToFirst();
         int totalRatingPoints = cursor1.getInt(columnIndex);
-        Log.d("ratingpoints first", String.valueOf(totalRatingPoints));
         double ratingPointsDouble = Double.parseDouble(String.valueOf(totalRatingPoints));
-        Log.d("ratingpoints", String.valueOf(ratingPointsDouble));
 
         cursor1.close();
 
@@ -165,8 +162,6 @@ public class BeerHandler {
         int totalTimesRated = cursor2.getCount();
 
         double ratingTimesDouble = Double.parseDouble(String.valueOf(totalTimesRated));
-        Log.d("ratingtimes", String.valueOf(ratingTimesDouble));
-
 
         double averageRating = ratingPointsDouble/ratingTimesDouble;
         String averageRatingRounded = String.format("%.1f", averageRating);
@@ -183,14 +178,12 @@ public class BeerHandler {
                 new String[]{beerName, userName});
         cursor.moveToFirst();
         int totalRatingPoints = cursor.getInt(0);
-        Log.d("user avg rating", String.valueOf(totalRatingPoints));
         double ratingPointsDouble = Double.parseDouble(String.valueOf(totalRatingPoints));
 
 
         Cursor cursor2 = ourDB.rawQuery("SELECT name FROM beers WHERE name = ? AND user_name = ?",
                 new String[]{beerName, userName});
         int totalTimesRated = cursor2.getCount();
-        Log.d("user avg rating", String.valueOf(totalTimesRated));
         double ratingTimesDouble = Double.parseDouble(String.valueOf(totalTimesRated));
 
         double averageRating = ratingPointsDouble/ratingTimesDouble;
@@ -211,11 +204,10 @@ public class BeerHandler {
         List<String> beerList = new ArrayList<>();
         beerList.add(beerName);
         while (cursor.moveToNext()){
-            Log.d("beer name", beerName);
+
             beerName = cursor.getString(columnIndex);
             beerList.add(beerName);
         }
-        Log.d("cursor", String.valueOf(cursor));
 
         return beerList;
 
@@ -235,11 +227,9 @@ public class BeerHandler {
             List<String> beerList = new ArrayList<>();
             beerList.add(beerName);
             while (cursor.moveToNext()){
-                Log.d("beer order name order", beerName);
                 beerName = cursor.getString(columnIndex);
                 beerList.add(beerName);
             }
-            Log.d("cursor order", String.valueOf(cursor));
             return beerList;
         } else {
             return null;
@@ -257,18 +247,15 @@ public class BeerHandler {
         int columnIndex = cursor.getColumnIndex("name");
 
         if (cursor.getCount() > 0) {
-            Log.d("cursor less than 1", String.valueOf(cursor.getCount()));
 
             String beerName = cursor.getString(columnIndex);
 
             List<String> beerList = new ArrayList<>();
             beerList.add(beerName);
             while (cursor.moveToNext()) {
-                Log.d("beer order name order", beerName);
                 beerName = cursor.getString(columnIndex);
                 beerList.add(beerName);
             }
-            Log.d("cursor order", String.valueOf(cursor));
 
             return beerList;
         }
@@ -287,18 +274,15 @@ public class BeerHandler {
         int columnIndex = cursor.getColumnIndex("name");
 
         if (cursor.getCount() > 0) {
-            Log.d("cursor less than 1", String.valueOf(cursor.getCount()));
 
             String beerName = cursor.getString(columnIndex);
 
             List<String> beerList = new ArrayList<>();
             beerList.add(beerName);
             while (cursor.moveToNext()) {
-                Log.d("beer order name rating", beerName);
                 beerName = cursor.getString(columnIndex);
                 beerList.add(beerName);
             }
-            Log.d("cursor order rating", String.valueOf(cursor));
 
             return beerList;
         } else {
@@ -317,18 +301,15 @@ public class BeerHandler {
         int columnIndex = cursor.getColumnIndex("name");
 
         if (cursor.getCount() > 0) {
-            Log.d("cursor less than 1", String.valueOf(cursor.getCount()));
 
             String beerName = cursor.getString(columnIndex);
 
             List<String> beerList = new ArrayList<>();
             beerList.add(beerName);
             while (cursor.moveToNext()) {
-                Log.d("order rating by user", beerName);
                 beerName = cursor.getString(columnIndex);
                 beerList.add(beerName);
             }
-            Log.d("cursor rating by user", String.valueOf(cursor));
 
             return beerList;
         } else {
@@ -344,9 +325,7 @@ public class BeerHandler {
                 new String[]{beerName});
         cursor.moveToFirst();
         int breweryColumn = cursor.getColumnIndex("brewery");
-        Log.d("brewery column", String.valueOf(breweryColumn));
         String brewery = cursor.getString(breweryColumn);
-        Log.d("brewery", brewery);
 
         return brewery;
     }
@@ -359,11 +338,11 @@ public class BeerHandler {
         ArrayList<String> usernameArrayList = new ArrayList<>();
 
         int usernameColumn = cursor.getColumnIndex("user_name");
-        Log.d("beer helper user column", String.valueOf(usernameColumn));
+
         if (cursor.getCount() > 0) {
             String userName = cursor.getString(usernameColumn);
             usernameArrayList.add(userName);
-            Log.d("beer helper user name", userName);
+
             while (cursor.moveToNext()) {
                 userName = cursor.getString(usernameColumn);
                 usernameArrayList.add(userName);

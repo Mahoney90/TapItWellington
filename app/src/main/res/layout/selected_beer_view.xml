@@ -78,6 +78,7 @@
                 android:background="@drawable/shape"
                 android:paddingRight="8dp"
                 android:paddingLeft="6dp"
+                android:layout_marginLeft="3dp"
                 android:layout_below="@+id/total_check_in"
                 android:layout_toRightOf="@+id/total_rating"
                 android:layout_toEndOf="@+id/total_rating"/>
@@ -163,6 +164,7 @@
             android:background="@drawable/shape"
             android:paddingRight="8dp"
             android:paddingLeft="6dp"
+            android:layout_marginLeft="-3dp"
             android:layout_alignParentTop="true"
             android:layout_toRightOf="@+id/user_check_in"
             android:layout_toEndOf="@+id/user_check_in"/>
@@ -194,7 +196,8 @@
             android:background="@drawable/shape"
             android:layout_below="@+id/user_check_in"
             android:layout_toRightOf="@+id/user_check_in_rating"
-            android:layout_toEndOf="@+id/user_check_in_rating"/>
+            android:layout_toEndOf="@+id/user_check_in_rating"
+            android:layout_marginLeft="-10dp"/>
 
 
     </RelativeLayout>

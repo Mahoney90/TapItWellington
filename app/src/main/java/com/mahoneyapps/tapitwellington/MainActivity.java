@@ -8,7 +8,6 @@ import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -47,29 +46,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         tabLayout.addTab(tabLayout.newTab().setIcon(R.drawable.ic_map));
         tabLayout.addTab(tabLayout.newTab().setIcon(R.drawable.ic_leaderboard));
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
-
-//        mUserName = getIntent().getExtras().getString("name");
-//        Log.d("the user name MA", mUserName);
-
-
-//        mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-//        SharedPreferences.Editor editor = mSharedPreferences.edit();
-//        editor.putString("the user name", mUserName);
-//        Log.d("put string user name", mUserName);
-//        editor.apply();
-
-//        final FragmentTwo frag2 = new FragmentTwo();
-//        Bundle bundle = new Bundle();
-//        bundle.putString("text", name);
-//        frag2.setArguments(bundle);
-
-//
-//        mSessionManager = new SessionManager(this);
-//        if (!mSessionManager.isLoggedIn()){
-//            Log.d("Opening session manager", "okay");
-//            Intent openLogin = new Intent(this, SignInActivity.class);
-//            startActivity(openLogin);
-//        }
 
 
         // if there is no saved bundle, add FragmentOne XML to the activity launch frame
@@ -120,7 +96,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
     @Override
     public void onBackPressed() {
-        Log.d("start onBackPressed: " + getFragmentManager().getBackStackEntryCount(), "woo");
+
         // Pop the backstack if there are entries on the backstack
         if (getFragmentManager().getBackStackEntryCount() != 0){
             getFragmentManager().popBackStack();

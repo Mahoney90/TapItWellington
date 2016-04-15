@@ -17,7 +17,6 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.InflateException;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -78,7 +77,6 @@ public class BeerMap extends Fragment implements OnMapReadyCallback,
         } catch (InflateException e){
 
         }
-        Log.d("oncreate view beermap", "yes");
 
         AppCompatActivity activity = ((AppCompatActivity) getActivity());
 
@@ -97,7 +95,6 @@ public class BeerMap extends Fragment implements OnMapReadyCallback,
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        Log.d("on view created beermap", "yes");
         setHasOptionsMenu(true);
 
         mGoogleApiClient = new GoogleApiClient.Builder(getActivity()).addConnectionCallbacks(this)
@@ -112,14 +109,14 @@ public class BeerMap extends Fragment implements OnMapReadyCallback,
     @Override
     public void onStart() {
         super.onStart();
-        Log.d("on start", "starting");
+
         mGoogleApiClient.connect();
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        Log.d("on stop beermap", "yes");
+
         if ((mGoogleApiClient != null) && mGoogleApiClient.isConnected()) {
             mGoogleApiClient.disconnect();
         }
@@ -128,20 +125,9 @@ public class BeerMap extends Fragment implements OnMapReadyCallback,
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        Log.d("on destroy view beermap", "yes");
-//        FragmentManager fm = getActivity().getFragmentManager();
-//        Fragment fragment = (fm.findFragmentById(R.id.map));
-//        FragmentTransaction ft = fm.beginTransaction();
-//        ft.remove(fragment);
-//        ft.commit();
+
     }
 
-//    private void addListeners() {
-//        mMap.setOnInfoWindowClickListener(this);
-//        mMap.setOnMapLongClickListener(this);
-//        mMap.setOnMapClickListener(this);
-//        mMap.setOnMarkerClickListener(this);
-//    }
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
@@ -163,7 +149,7 @@ public class BeerMap extends Fragment implements OnMapReadyCallback,
         mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
             @Override
             public void onInfoWindowClick(Marker marker) {
-                Log.d("on info click", "woo");
+
                 String title = marker.getTitle();
                 FragmentTransaction ft = ((FragmentActivity) getActivity()).getFragmentManager()
                         .beginTransaction();
@@ -220,11 +206,11 @@ public class BeerMap extends Fragment implements OnMapReadyCallback,
     @Override
     public void onConnected(Bundle bundle) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
-            Log.d("sdk 23", "yup");
+
 
         if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
-            Log.d("no permission", "no permission");
+
             // TODO: Consider calling
             //    public void requestPermissions(@NonNull String[] permissions, int requestCode)
             // here to request the missing permissions, and then overriding
@@ -240,30 +226,10 @@ public class BeerMap extends Fragment implements OnMapReadyCallback,
 
             requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, MY_PERMISSIONS_REQUEST);
 
-//            if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION)
-//                        != PackageManager.PERMISSION_GRANTED) {
-//                LocationManager locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
-//                Criteria criteria = new Criteria();
-//                String provider = String.valueOf(locationManager.getBestProvider(criteria, false));
-//                lastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
-//                Location location = locationManager.getLastKnownLocation(provider);
-//                Log.d("location", String.valueOf(location));
-//                locationManager.requestLocationUpdates(provider, 1000, 0, this);
-//                Log.d("Cam", String.valueOf(lastLocation));
-//                properZoom(lastLocation);
-//            } else {
-//
-//            }
-//                    ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 2);
-//                    lastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
-//                    properZoom(lastLocation);
 
-//                }
-
-//            }
 
         } else {
-            Log.d("permission", "yes permission");
+
             LocationManager locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
             Criteria criteria = new Criteria();
             String provider = String.valueOf(locationManager.getBestProvider(criteria, false));
@@ -281,21 +247,21 @@ public class BeerMap extends Fragment implements OnMapReadyCallback,
             // lastlocation works but location doesn't, edit code appropriately
             lastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
             Location location = locationManager.getLastKnownLocation(provider);
-            Log.d("location", String.valueOf(location));
+
             locationManager.requestLocationUpdates(provider, 1000, 0, this);
-            Log.d("Cam", String.valueOf(lastLocation));
+
             properZoom(lastLocation);
         }
         } else {
-            Log.d("not 23", "nope");
+
             LocationManager locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
             Criteria criteria = new Criteria();
             String provider = String.valueOf(locationManager.getBestProvider(criteria, false));
             lastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
             Location location = locationManager.getLastKnownLocation(provider);
-            Log.d("location", String.valueOf(location));
+
             locationManager.requestLocationUpdates(provider, 1000, 0, this);
-            Log.d("Cam", String.valueOf(lastLocation));
+
             properZoom(lastLocation);
 
         }
@@ -303,11 +269,10 @@ public class BeerMap extends Fragment implements OnMapReadyCallback,
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        Log.d("requesting perms", "woo");
+
         switch (requestCode) {
             case MY_PERMISSIONS_REQUEST: {
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    Log.d("on request granted", "woo");
 
                     LocationManager locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
                     Criteria criteria = new Criteria();
@@ -325,13 +290,13 @@ public class BeerMap extends Fragment implements OnMapReadyCallback,
                     }
                     lastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
                     Location location = locationManager.getLastKnownLocation(provider);
-                    Log.d("location", String.valueOf(location));
+
                     locationManager.requestLocationUpdates(provider, 1000, 0, this);
-                    Log.d("Cam", String.valueOf(lastLocation));
+
                     properZoom(lastLocation);
 
                 } else {
-                    Log.d("wrong request code", "hmm");
+
                 }
 
             }
@@ -345,7 +310,7 @@ public class BeerMap extends Fragment implements OnMapReadyCallback,
 //                .target(new LatLng(-41.2952851, 174.7678296))
                 .zoom(14f)
                 .build();
-        Log.d("Camera", String.valueOf(cameraPosition));
+
 
         mMap.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
         mMap.setMyLocationEnabled(true);

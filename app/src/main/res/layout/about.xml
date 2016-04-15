@@ -1,15 +1,127 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:orientation="vertical"
               android:layout_width="match_parent"
               android:layout_height="match_parent">
-
     <TextView
-        android:id="@+id/about_credits"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:textStyle="italic"
+        android:layout_gravity="center"
+        android:text="How to rate:"
+        android:textStyle="bold"
+        android:textSize="30dp"
+        android:textColor="#FF9800"
+        android:layout_marginBottom="10dp"/>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:layout_marginTop="5dp">
+    <RatingBar
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:numStars="4"
+        android:isIndicator="true"
+        android:rating="4.0"
+        android:theme="@style/RatingBar"
         />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Loved it"
+        android:layout_marginTop="10dp"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:layout_marginLeft="20dp"
+        android:textColor="#F57C00"/>
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp">
+        <RatingBar
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:numStars="3"
+            android:isIndicator="true"
+            android:rating="3.0"
+            android:theme="@style/RatingBar"
+            />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Hmm.. Sure"
+            android:layout_marginTop="10dp"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:layout_marginLeft="20dp"
+            android:textColor="#F57C00"/>
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp">
+        <RatingBar
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:numStars="2"
+            android:isIndicator="true"
+            android:rating="2.0"
+            android:theme="@style/RatingBar"
+            />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Hmm.. Nah"
+            android:layout_marginTop="10dp"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:layout_marginLeft="20dp"
+            android:textColor="#F57C00"/>
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp">
+        <RatingBar
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:numStars="1"
+            android:isIndicator="true"
+            android:rating="1.0"
+            android:theme="@style/RatingBar"
+            />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Not my cup of.. Beer"
+            android:layout_marginTop="10dp"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:layout_marginLeft="20dp"
+            android:textColor="#F57C00"/>
+    </LinearLayout>
 
-</RelativeLayout>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:textColor="#FF9800"
+        android:textStyle="bold"
+        android:text="Is it a 2 or a 3? A 4-star rating system forces you off the fence and into deciding if this beer falls just above, or below, the 'Well, I'd have it again' threshold"/>
+
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+        <TextView
+            android:id="@+id/about_credits"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:textStyle="italic"
+            />
+
+    </RelativeLayout>
+
+</LinearLayout>

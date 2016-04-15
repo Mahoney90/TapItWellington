@@ -6,7 +6,6 @@ import android.database.MatrixCursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.util.Log;
 
 import java.util.ArrayList;
 
@@ -17,7 +16,7 @@ import java.util.ArrayList;
 public class SQLiteBeerHelper extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "Tap It DB";
-    private static final int DATABASE_VERSION = 3;
+    private static final int DATABASE_VERSION = 4;
     protected static final String TABLE_BEERS = "beers";
     public static final String KEY_ID = "id";
     public static final String BEER_NAME = "name";
@@ -82,15 +81,13 @@ public class SQLiteBeerHelper extends SQLiteOpenHelper {
 
             // handle exceptions
         } catch(SQLException sqlEx){
-            Log.d("printing exception", sqlEx.getMessage());
+
             //if any exceptions are triggered save the error message to cursor an return the arraylist
             Cursor2.addRow(new Object[] { ""+sqlEx.getMessage() });
             alc.set(1,Cursor2);
             return alc;
 
         } catch(Exception ex){
-
-            Log.d("printing exception", ex.getMessage());
 
             //if any exceptions are triggered save the error message to cursor an return the arraylist
             Cursor2.addRow(new Object[] { ""+ex.getMessage() });
