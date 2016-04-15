@@ -159,7 +159,6 @@ public class GoogleSignIn extends AppCompatActivity implements GoogleApiClient.O
         editor.putBoolean("loggedin", true);
         editor.apply();
         Intent i = new Intent(GoogleSignIn.this, MainActivity.class);
-        Log.d("manual login", "");
         setPrefs("name", usernameEdit, this);
         startActivity(i);
     }
@@ -197,10 +196,8 @@ public class GoogleSignIn extends AppCompatActivity implements GoogleApiClient.O
 
         // Result returned from launching the Intent from GoogleSignInApi.getSignInIntent(...);
         if (requestCode == 9001){
-            Log.d("on activity result", "");
             GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
             int statusCode = result.getStatus().getStatusCode();
-            Log.d("status code", String.valueOf(statusCode));
 
             handleSignInResult(result);
         }
@@ -208,10 +205,8 @@ public class GoogleSignIn extends AppCompatActivity implements GoogleApiClient.O
 
 
     private void handleSignInResult(GoogleSignInResult result){
-        Log.d("handle UI", "");
-        Log.d("sttus", String.valueOf(result.getStatus()));
+
         if (result.isSuccess()){
-            Log.d("success", "");
             // Signed in successfully, show authenticated UI.
             GoogleSignInAccount account = result.getSignInAccount();
             if (account.getDisplayName() != null) {
@@ -231,12 +226,9 @@ public class GoogleSignIn extends AppCompatActivity implements GoogleApiClient.O
                 mStatusTextView.setText(getString(R.string.signed_in, account.getDisplayName()));
                 mStatusTextView.setText("Hi " + mDisplayName);
             }
-            Log.d("handle2 UI", "");
             updateUI(true);
 
         } else {
-            Log.d("sttus", String.valueOf(result.getStatus()));
-            Log.d("handle not signed in UI", "");
             // Signed out, show unauthenticated UI.
             updateUI(false);
         }
@@ -262,7 +254,6 @@ public class GoogleSignIn extends AppCompatActivity implements GoogleApiClient.O
 
         switch (v.getId()){
             case R.id.sign_in_button:
-                Log.d("sign in", "");
                 signIn();
                 break;
             case R.id.sign_out_button:
@@ -277,7 +268,6 @@ public class GoogleSignIn extends AppCompatActivity implements GoogleApiClient.O
     // [start signIn]
     private void signIn(){
         Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
-        Log.d("sign in", "");
         startActivityForResult(signInIntent, 9001);
     }
 
@@ -303,7 +293,6 @@ public class GoogleSignIn extends AppCompatActivity implements GoogleApiClient.O
 
     public void moveToApp(){
         Intent intent = new Intent(GoogleSignIn.this, MainActivity.class);
-        Log.d("move to app", "");
         startActivity(intent);
     }
 
@@ -311,7 +300,6 @@ public class GoogleSignIn extends AppCompatActivity implements GoogleApiClient.O
     public void onConnectionFailed(ConnectionResult connectionResult) {
         // An unresolvable error has occurred and Google APIs (including Sign-In) will not
         // be available.
-        Log.d("on connection failed", "");
     }
 
     private void showProgressDialog(){
@@ -338,17 +326,14 @@ public class GoogleSignIn extends AppCompatActivity implements GoogleApiClient.O
             Bundle bundle = new Bundle();
             bundle.putString("name", mDisplayName);
             intent.putExtras(bundle);
-        Log.d("Update UI", "");
             MyBeerHistory.newHistory(bundle);
             SelectedBeerView.newInstance(bundle);
             MostBeersPerUser.instance(bundle);
             HighestRatingPerUser.newInstance1(bundle);
-            Log.d("Update UI2", "");
             startActivity(intent);
 
             finish();
         } else {
-            Log.d("niot signed in UI", "");
             mStatusTextView.setText(R.string.signed_out);
 
             findViewById(R.id.sign_in_button).setVisibility(View.VISIBLE);
